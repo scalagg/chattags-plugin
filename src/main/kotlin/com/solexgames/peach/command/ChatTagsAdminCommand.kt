@@ -117,7 +117,7 @@ class ChatTagsAdminCommand : BaseCommand() {
 
         chatTag.saveAndPushUpdatesGlobally().thenAccept {
             sender.sendMessage("${CC.SEC}You've created the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat tag.")
-            sender.sendMessage("${CC.GRAY}Use /peach meta design ${chatTag.value} <design> to set the tag design.")
+            sender.sendMessage("${CC.GRAY}Use /peach meta design ${chatTag.displayName} <design> to set the tag design.")
         }
     }
 
