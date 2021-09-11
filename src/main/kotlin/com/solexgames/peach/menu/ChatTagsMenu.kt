@@ -1,6 +1,7 @@
 package com.solexgames.peach.menu
 
 import com.cryptomorin.xseries.XMaterial
+import com.solexgames.lemon.Lemon
 import com.solexgames.peach.PeachSpigotPlugin
 import com.solexgames.peach.model.ChatTag
 import com.solexgames.peach.model.ChatTagPlayer
@@ -69,6 +70,8 @@ class ChatTagsMenu : PaginatedMenu() {
             }
 
             chatTagPlayer.currentChatTag = chatTag.uniqueId
+
+            Lemon.instance.playerHandler.findPlayer(player.uniqueId).orElse(null)?.save()
 
             player.sendMessage("${CC.SEC}You've equipped the ${CC.PRI}${chatTag.displayName} ${CC.GRAY}(${chatTag.value}${CC.GRAY})${CC.SEC} chat tag.")
         }
