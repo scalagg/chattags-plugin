@@ -27,6 +27,8 @@ dependencies {
 
 shadowJar {
     archiveClassifier.set("")
+
+    archiveFileName = "Peach.jar"
 }
 
 tasks.build.dependsOn(shadowJar)

@@ -2,18 +2,22 @@ package com.solexgames.peach
 
 import com.solexgames.lemon.Lemon
 import com.solexgames.lemon.player.metadata.Metadata
+import com.solexgames.lemon.player.rank.Rank
 import com.solexgames.peach.command.ChatTagsAdminCommand
 import com.solexgames.peach.command.ChatTagsCommand
 import com.solexgames.peach.handler.ChatTagHandler
 import com.solexgames.peach.handler.MongoHandler
 import com.solexgames.peach.handler.PeachRedisHandler
+import com.solexgames.peach.model.ChatTag
 import com.solexgames.peach.model.ChatTagPlayer
 import com.solexgames.redis.JedisBuilder
 import me.lucko.helper.Events
 import me.lucko.helper.plugin.ExtendedJavaPlugin
+import net.evilblock.cubed.acf.ConditionFailedException
 import net.evilblock.cubed.acf.MessageType
 import net.evilblock.cubed.command.manager.CubedCommandManager
 import net.evilblock.cubed.serializers.Serializers
+import net.evilblock.cubed.util.CC
 import org.bukkit.ChatColor
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -104,6 +108,21 @@ class PeachSpigotPlugin : ExtendedJavaPlugin() {
             commandManager.getFormat(it).setColor(3, ChatColor.GRAY)
             commandManager.getFormat(it).setColor(2, ChatColor.valueOf(Lemon.instance.lemonWebData.secondary))
             commandManager.getFormat(it).setColor(1, ChatColor.valueOf(Lemon.instance.lemonWebData.primary))
+        }
+
+        commandManager.commandCompletions.registerAsyncCompletion("chattags") {
+            return@registerAsyncCompletion mutableListOf<String>().also {
+                chatTagHandler.chatTags.values.forEach { chatTag ->
+                    it.add(chatTag.displayName)
+                }
+            }
+        }
+
+        commandManager.commandContexts.registerContext(ChatTag::class.java) {
+            val firstArgument = it.popFirstArg()
+
+            return@registerContext chatTagHandler.findChatTag(firstArgument)
+                ?: throw ConditionFailedException("Could not find chat tag by the name: ${CC.YELLOW}$firstArgument${CC.RED}.")
         }
 
         commandManager.registerCommand(ChatTagsCommand())

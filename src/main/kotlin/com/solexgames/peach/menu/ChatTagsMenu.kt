@@ -45,7 +45,7 @@ class ChatTagsMenu : PaginatedMenu() {
             lore.add(chatTag.value)
             lore.add("")
             lore.add(
-                if (chatTagPlayer.ownedTags.contains(chatTag.displayName)) {
+                if (chatTagPlayer.ownedTags.contains(chatTag.uniqueId)) {
                     "${CC.GREEN}Click to equip this tag."
                 } else {
                     "${CC.RED}You can't equip this tag."
@@ -58,7 +58,7 @@ class ChatTagsMenu : PaginatedMenu() {
         }
 
         override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
-            if (!chatTagPlayer.ownedTags.contains(chatTag.displayName)) {
+            if (!chatTagPlayer.ownedTags.contains(chatTag.uniqueId)) {
                 player.sendMessage("${CC.RED}You don't own the ${CC.YELLOW}${chatTag.displayName}${CC.RED} tag.")
                 return
             }

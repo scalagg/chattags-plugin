@@ -10,6 +10,6 @@ class ChatTagPlayer {
 
     var currentChatTag: UUID? = null
 
-    val ownedTags: MutableList<String> = mutableListOf()
+    val ownedTags: MutableList<UUID> = mutableListOf()
 
 }

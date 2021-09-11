@@ -3,6 +3,7 @@ package com.solexgames.peach.model
 import com.solexgames.lemon.handler.RedisHandler
 import com.solexgames.lemon.util.type.Savable
 import com.solexgames.peach.PeachSpigotPlugin
+import net.evilblock.cubed.util.CC
 import java.util.*
 import java.util.concurrent.CompletableFuture
 import kotlin.collections.HashMap
@@ -12,10 +13,10 @@ import kotlin.collections.HashMap
  * @since 9/11/2021
  */
 data class ChatTag(
-   val uniqueId: UUID,
-   var displayName: String,
-   var value: String,
-): Savable {
+    val uniqueId: UUID,
+    var displayName: String,
+    var value: String = CC.GRAY,
+) : Savable {
 
     override fun save(): CompletableFuture<Void> {
         return PeachSpigotPlugin.instance.mongoHandler.chatTagLayer.saveEntry(

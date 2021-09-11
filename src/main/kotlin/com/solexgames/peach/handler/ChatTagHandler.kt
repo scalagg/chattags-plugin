@@ -2,7 +2,6 @@ package com.solexgames.peach.handler
 
 import com.solexgames.peach.PeachSpigotPlugin
 import com.solexgames.peach.model.ChatTag
-import net.evilblock.cubed.util.CC
 import java.util.*
 
 /**
@@ -18,11 +17,12 @@ object ChatTagHandler {
             tags.forEach {
                 chatTags[it.value.uniqueId] = it.value
             }
+        }
+    }
 
-            if (chatTags.isEmpty()) {
-                val uuid = UUID.randomUUID()
-                chatTags[uuid] = ChatTag(uuid, "Testing", "${CC.AQUA}Testing")
-            }
+    fun findChatTag(name: String): ChatTag? {
+        return chatTags.values.firstOrNull {
+            it.displayName.equals(name, true)
         }
     }
 }
