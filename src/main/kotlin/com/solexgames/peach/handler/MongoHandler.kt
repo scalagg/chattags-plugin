@@ -1,0 +1,28 @@
+package com.solexgames.peach.handler
+
+import com.solexgames.datastore.commons.connection.impl.mongo.UriMongoConnection
+import com.solexgames.datastore.commons.layer.impl.MongoStorageLayer
+import com.solexgames.datastore.commons.storage.impl.MongoStorageBuilder
+import com.solexgames.lemon.Lemon
+import com.solexgames.peach.model.ChatTag
+import net.evilblock.cubed.serializers.Serializers
+
+/**
+ * @author GrowlyX
+ * @since 9/11/2021
+ */
+object MongoHandler {
+
+    var chatTagLayer: MongoStorageLayer<ChatTag>
+
+    init {
+        val mongoConnection = UriMongoConnection(Lemon.instance.mongoConfig.uri)
+        val database = Lemon.instance.mongoConfig.database
+
+        this.chatTagLayer = MongoStorageBuilder<ChatTag>()
+            .setDatabase(database).setCollection("peach_chattags")
+            .setConnection(mongoConnection).setType(ChatTag::class.java).build()
+
+        chatTagLayer.supplyWithCustomGson(Serializers.gson)
+    }
+}

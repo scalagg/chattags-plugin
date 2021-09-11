@@ -1,0 +1,32 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '1.5.30'
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
+}
+
+group 'com.solexgames'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+
+    maven {
+        name = 'spigotmc-repo'
+        url = 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/'
+    }
+    maven {
+        url = "https://oss.sonatype.org/content/repositories/snapshots/"
+    }
+}
+
+dependencies {
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.5.30'
+    compileOnly 'org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT'
+
+    compileOnly fileTree(dir: "lib")
+}
+
+shadowJar {
+    archiveClassifier.set("")
+}
+
+tasks.build.dependsOn(shadowJar)
