@@ -52,6 +52,7 @@ class ChatTagsAdminCommand : BaseCommand() {
 
     @Subcommand("add")
     @Syntax("<player> <chatTag>")
+    @CommandCompletion("@players @chattags")
     @Description("Give a player a chat-tag.")
     fun onAdd(sender: CommandSender, target: OnlinePlayer, chatTag: ChatTag) {
         val chatTagPlayer = PeachSpigotPlugin.instance.players[target.player.uniqueId]
@@ -73,6 +74,7 @@ class ChatTagsAdminCommand : BaseCommand() {
 
     @Subcommand("remove")
     @Syntax("<player> <chatTag>")
+    @CommandCompletion("@players @chattags")
     @Description("Remove access to a chat-tag.")
     fun onRemove(sender: CommandSender, target: OnlinePlayer, chatTag: ChatTag) {
         val chatTagPlayer = PeachSpigotPlugin.instance.players[target.player.uniqueId]

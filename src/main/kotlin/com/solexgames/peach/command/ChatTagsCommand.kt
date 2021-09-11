@@ -11,7 +11,7 @@ import org.bukkit.entity.Player
  */
 class ChatTagsCommand : BaseCommand() {
 
-    @CommandAlias("chattags|tags|prefix")
+    @CommandAlias("chattags|tags")
     fun onChatTags(player: Player) {
         ChatTagsMenu().openMenu(player)
     }

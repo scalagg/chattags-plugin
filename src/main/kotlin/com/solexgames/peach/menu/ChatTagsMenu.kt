@@ -9,6 +9,7 @@ import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.pagination.PaginatedMenu
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.ItemBuilder
+import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.InventoryView
@@ -31,6 +32,33 @@ class ChatTagsMenu : PaginatedMenu() {
             PeachSpigotPlugin.instance.chatTagHandler.chatTags.values.forEach { chatTag ->
                 it[it.size] = ChatTagButton(chatTag, chatTagPlayer)
             }
+        }
+    }
+
+    override fun getGlobalButtons(player: Player): Map<Int, Button> {
+        return hashMapOf<Int, Button>().also {
+            it[4] = ItemBuilder(Material.BED)
+                .name("${CC.RED}Reset Tag")
+                .addToLore(
+                    "${CC.GRAY}Resets your current",
+                    "${CC.GRAY}chat tag.",
+                    "",
+                    "${CC.YELLOW}Click to reset."
+                )
+                .toButton { clicker, _ ->
+                    if (clicker != null) {
+                        val chatTagPlayer = PeachSpigotPlugin.instance.players[player.uniqueId]!!
+
+                        if (chatTagPlayer.currentChatTag == null) {
+                            clicker.sendMessage("${CC.RED}You don't have a tag equipped.")
+                            return@toButton
+                        }
+
+                        chatTagPlayer.currentChatTag = null
+
+                        clicker.sendMessage("${CC.GREEN}You've reset your tag.")
+                    }
+                }
         }
     }
 

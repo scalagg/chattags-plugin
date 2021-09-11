@@ -3,6 +3,7 @@ package com.solexgames.peach
 import com.solexgames.lemon.Lemon
 import com.solexgames.lemon.player.metadata.Metadata
 import com.solexgames.lemon.player.rank.Rank
+import com.solexgames.peach.channel.ChatTagDefaultChannel
 import com.solexgames.peach.command.ChatTagsAdminCommand
 import com.solexgames.peach.command.ChatTagsCommand
 import com.solexgames.peach.handler.ChatTagHandler
@@ -18,6 +19,7 @@ import net.evilblock.cubed.acf.MessageType
 import net.evilblock.cubed.command.manager.CubedCommandManager
 import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.util.CC
+import org.bukkit.Bukkit
 import org.bukkit.ChatColor
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
@@ -48,6 +50,8 @@ class PeachSpigotPlugin : ExtendedJavaPlugin() {
         loadCommands()
         loadRedisHandler()
         loadListeners()
+
+        Lemon.instance.chatHandler.channels["default"] = ChatTagDefaultChannel()
     }
 
     private fun loadListeners() {
@@ -114,6 +118,14 @@ class PeachSpigotPlugin : ExtendedJavaPlugin() {
             return@registerAsyncCompletion mutableListOf<String>().also {
                 chatTagHandler.chatTags.values.forEach { chatTag ->
                     it.add(chatTag.displayName)
+                }
+            }
+        }
+
+        commandManager.commandCompletions.registerAsyncCompletion("players") {
+            return@registerAsyncCompletion mutableListOf<String>().also {
+                Bukkit.getOnlinePlayers().forEach { player ->
+                    it.add(player.name)
                 }
             }
         }
