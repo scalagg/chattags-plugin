@@ -21,8 +21,10 @@ import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.util.CC
 import org.bukkit.Bukkit
 import org.bukkit.ChatColor
+import org.bukkit.Material
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
+import org.bukkit.inventory.ItemStack
 import java.util.*
 
 /**
@@ -134,7 +136,7 @@ class PeachSpigotPlugin : ExtendedJavaPlugin() {
             val firstArgument = it.popFirstArg()
 
             return@registerContext chatTagHandler.findChatTag(firstArgument)
-                ?: throw ConditionFailedException("Could not find chat tag by the name: ${CC.YELLOW}$firstArgument${CC.RED}.")
+                ?: throw ConditionFailedException("No chat-tag matching ${CC.YELLOW}$firstArgument${CC.RED} could be found.")
         }
 
         commandManager.registerCommand(ChatTagsCommand())

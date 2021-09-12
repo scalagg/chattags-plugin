@@ -69,12 +69,22 @@ class ChatTagsMenu : PaginatedMenu() {
 
         override fun getButtonItem(player: Player): ItemStack {
             val lore = mutableListOf<String>()
+            val ownsPrefix = chatTagPlayer.ownedTags.contains(chatTag.uniqueId)
 
+            if (ownsPrefix) {
+                lore.add("${CC.GRAY}You own this prefix and it");
+                lore.add("${CC.GRAY}can be enabled at any time.");
+            } else {
+                lore.add("${CC.GRAY}This prefix is currently");
+                lore.add("${CC.GRAY}locked as you don't own it.");
+            }
+
+            lore.add("")
             lore.add("${CC.GRAY}Shows up in chat as:")
             lore.add(chatTag.value)
             lore.add("")
             lore.add(
-                if (chatTagPlayer.ownedTags.contains(chatTag.uniqueId)) {
+                if (ownsPrefix) {
                     "${CC.GREEN}Click to equip this tag."
                 } else {
                     "${CC.RED}You can't equip this tag."
