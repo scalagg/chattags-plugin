@@ -28,7 +28,7 @@ data class ChatTag(
         return save().thenApply {
             RedisHandler.buildMessage(
                 "chat-tag-update",
-                HashMap<String, String>().also {
+                hashMapOf<String, String>().also {
                     it["uniqueId"] = uniqueId.toString()
                 }
             ).publishAsync("peach")
@@ -36,5 +36,4 @@ data class ChatTag(
             return@thenApply null
         }
     }
-
 }
