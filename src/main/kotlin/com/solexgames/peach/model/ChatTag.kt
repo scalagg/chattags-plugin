@@ -6,7 +6,6 @@ import com.solexgames.peach.PeachSpigotPlugin
 import net.evilblock.cubed.util.CC
 import java.util.*
 import java.util.concurrent.CompletableFuture
-import kotlin.collections.HashMap
 
 /**
  * @author GrowlyX

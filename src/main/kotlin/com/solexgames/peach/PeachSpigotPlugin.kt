@@ -108,26 +108,16 @@ class PeachSpigotPlugin : ExtendedJavaPlugin() {
     }
 
     private fun loadCommands() {
-        val commandManager = CubedCommandManager(this)
-
-        listOf<MessageType>(MessageType.HELP, MessageType.INFO, MessageType.SYNTAX).forEach {
-            commandManager.getFormat(it).setColor(3, ChatColor.GRAY)
-            commandManager.getFormat(it).setColor(2, ChatColor.valueOf(Lemon.instance.lemonWebData.secondary))
-            commandManager.getFormat(it).setColor(1, ChatColor.valueOf(Lemon.instance.lemonWebData.primary))
-        }
+        val commandManager = CubedCommandManager(
+            plugin = this,
+            primary = ChatColor.valueOf(Lemon.instance.lemonWebData.primary),
+            secondary = ChatColor.valueOf(Lemon.instance.lemonWebData.secondary)
+        )
 
         commandManager.commandCompletions.registerAsyncCompletion("chattags") {
             return@registerAsyncCompletion mutableListOf<String>().also {
                 chatTagHandler.chatTags.values.forEach { chatTag ->
                     it.add(chatTag.displayName)
-                }
-            }
-        }
-
-        commandManager.commandCompletions.registerAsyncCompletion("players") {
-            return@registerAsyncCompletion mutableListOf<String>().also {
-                Bukkit.getOnlinePlayers().forEach { player ->
-                    it.add(player.name)
                 }
             }
         }
@@ -139,7 +129,6 @@ class PeachSpigotPlugin : ExtendedJavaPlugin() {
                 ?: throw ConditionFailedException("No chat-tag matching ${CC.YELLOW}$firstArgument${CC.RED} could be found.")
         }
 
-        commandManager.registerCommand(ChatTagsCommand())
-        commandManager.registerCommand(ChatTagsAdminCommand())
+        Lemon.instance.registerCommandsInPackage(commandManager, "com.solexgames.peach.command")
     }
 }
