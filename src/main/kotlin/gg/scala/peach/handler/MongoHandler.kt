@@ -1,10 +1,10 @@
-package com.solexgames.peach.handler
+package gg.scala.peach.handler
 
 import com.solexgames.datastore.commons.connection.impl.mongo.UriMongoConnection
 import com.solexgames.datastore.commons.layer.impl.MongoStorageLayer
 import com.solexgames.datastore.commons.storage.impl.MongoStorageBuilder
 import com.solexgames.lemon.Lemon
-import com.solexgames.peach.model.ChatTag
+import gg.scala.peach.model.ChatTag
 import net.evilblock.cubed.serializers.Serializers
 
 /**
@@ -19,7 +19,7 @@ object MongoHandler {
         val mongoConnection = UriMongoConnection(Lemon.instance.mongoConfig.uri)
         val database = Lemon.instance.mongoConfig.database
 
-        this.chatTagLayer = MongoStorageBuilder<ChatTag>()
+        chatTagLayer = MongoStorageBuilder<ChatTag>()
             .setDatabase(database).setCollection("peach_chattags")
             .setConnection(mongoConnection).setType(ChatTag::class.java).build()
 

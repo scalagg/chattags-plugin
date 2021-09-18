@@ -1,7 +1,7 @@
-package com.solexgames.peach.handler
+package gg.scala.peach.handler
 
-import com.solexgames.peach.PeachSpigotPlugin
-import com.solexgames.peach.model.ChatTag
+import gg.scala.peach.PeachSpigotPlugin
+import gg.scala.peach.model.ChatTag
 import java.util.*
 
 /**
@@ -13,7 +13,7 @@ object ChatTagHandler {
     val chatTags = mutableMapOf<UUID, ChatTag>()
 
     init {
-        PeachSpigotPlugin.instance.mongoHandler.chatTagLayer.fetchAllEntries().thenAccept { tags ->
+        MongoHandler.chatTagLayer.fetchAllEntries().thenAccept { tags ->
             tags.forEach {
                 chatTags[it.value.uniqueId] = it.value
             }

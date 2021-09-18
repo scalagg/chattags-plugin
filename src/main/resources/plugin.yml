@@ -1,8 +1,8 @@
 name: Peach
 version: 1.0.0
-main: com.solexgames.peach.PeachSpigotPlugin
+main: gg.scala.peach.PeachSpigotPlugin
 
-author: SolexGames
-website: https://solexgames.com
+author: Scala
+website: https://scala.gg
 
 depend: [Cubed, Lemon]

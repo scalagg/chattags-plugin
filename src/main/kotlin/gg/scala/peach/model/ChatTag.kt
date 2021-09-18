@@ -1,8 +1,8 @@
-package com.solexgames.peach.model
+package gg.scala.peach.model
 
 import com.solexgames.lemon.handler.RedisHandler
 import com.solexgames.lemon.util.type.Savable
-import com.solexgames.peach.PeachSpigotPlugin
+import gg.scala.peach.PeachSpigotPlugin
 import net.evilblock.cubed.util.CC
 import java.util.*
 import java.util.concurrent.CompletableFuture

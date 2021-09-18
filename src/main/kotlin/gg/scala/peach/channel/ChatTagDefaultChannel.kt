@@ -1,7 +1,7 @@
-package com.solexgames.peach.channel
+package gg.scala.peach.channel
 
 import com.solexgames.lemon.player.channel.impl.DefaultChannel
-import com.solexgames.peach.PeachSpigotPlugin
+import gg.scala.peach.PeachSpigotPlugin
 import org.bukkit.entity.Player
 
 /**

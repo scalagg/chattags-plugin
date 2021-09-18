@@ -1,10 +1,10 @@
-package com.solexgames.peach.menu
+package gg.scala.peach.menu
 
 import com.cryptomorin.xseries.XMaterial
 import com.solexgames.lemon.Lemon
-import com.solexgames.peach.PeachSpigotPlugin
-import com.solexgames.peach.model.ChatTag
-import com.solexgames.peach.model.ChatTagPlayer
+import gg.scala.peach.PeachSpigotPlugin
+import gg.scala.peach.model.ChatTag
+import gg.scala.peach.model.ChatTagPlayer
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.pagination.PaginatedMenu
 import net.evilblock.cubed.util.CC

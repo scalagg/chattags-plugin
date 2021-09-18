@@ -1,16 +1,16 @@
-package com.solexgames.peach
+package gg.scala.peach
 
 import com.solexgames.lemon.Lemon
 import com.solexgames.lemon.player.metadata.Metadata
 import com.solexgames.lemon.player.rank.Rank
-import com.solexgames.peach.channel.ChatTagDefaultChannel
-import com.solexgames.peach.command.ChatTagsAdminCommand
-import com.solexgames.peach.command.ChatTagsCommand
-import com.solexgames.peach.handler.ChatTagHandler
-import com.solexgames.peach.handler.MongoHandler
-import com.solexgames.peach.handler.PeachRedisHandler
-import com.solexgames.peach.model.ChatTag
-import com.solexgames.peach.model.ChatTagPlayer
+import gg.scala.peach.channel.ChatTagDefaultChannel
+import gg.scala.peach.command.ChatTagsAdminCommand
+import gg.scala.peach.command.ChatTagsCommand
+import gg.scala.peach.handler.ChatTagHandler
+import gg.scala.peach.handler.MongoHandler
+import gg.scala.peach.handler.PeachRedisHandler
+import gg.scala.peach.model.ChatTag
+import gg.scala.peach.model.ChatTagPlayer
 import com.solexgames.redis.JedisBuilder
 import me.lucko.helper.Events
 import me.lucko.helper.plugin.ExtendedJavaPlugin

@@ -1,6 +1,6 @@
-package com.solexgames.peach.handler
+package gg.scala.peach.handler
 
-import com.solexgames.peach.PeachSpigotPlugin
+import gg.scala.peach.PeachSpigotPlugin
 import com.solexgames.redis.annotation.Subscription
 import com.solexgames.redis.handler.JedisHandler
 import com.solexgames.redis.json.JsonAppender
@@ -18,16 +18,16 @@ object PeachRedisHandler : JedisHandler {
             jsonAppender.getParam("uniqueId")
         )
 
-        PeachSpigotPlugin.instance.chatTagHandler.chatTags.remove(rankUuid)
+        ChatTagHandler.chatTags.remove(rankUuid)
     }
 
     @Subscription(action = "chat-tag-update")
     fun onChatTagUpdate(jsonAppender: JsonAppender) {
-        val completableFuture =  PeachSpigotPlugin.instance.mongoHandler.chatTagLayer
+        val completableFuture =  MongoHandler.chatTagLayer
             .fetchEntryByKey(jsonAppender.getParam("uniqueId"))
 
         completableFuture.thenAccept {
-            PeachSpigotPlugin.instance.chatTagHandler.chatTags[it.uniqueId] = it
+            ChatTagHandler.chatTags[it.uniqueId] = it
         }
     }
 }

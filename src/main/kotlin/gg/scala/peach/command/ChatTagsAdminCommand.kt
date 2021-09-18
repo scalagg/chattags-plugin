@@ -1,9 +1,9 @@
-package com.solexgames.peach.command
+package gg.scala.peach.command
 
 import com.solexgames.lemon.Lemon
 import com.solexgames.lemon.handler.RedisHandler
-import com.solexgames.peach.PeachSpigotPlugin
-import com.solexgames.peach.model.ChatTag
+import gg.scala.peach.PeachSpigotPlugin
+import gg.scala.peach.model.ChatTag
 import net.evilblock.cubed.acf.BaseCommand
 import net.evilblock.cubed.acf.CommandHelp
 import net.evilblock.cubed.acf.ConditionFailedException

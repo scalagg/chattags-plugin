@@ -1,4 +1,4 @@
-package com.solexgames.peach.model
+package gg.scala.peach.model
 
 import java.util.*
 

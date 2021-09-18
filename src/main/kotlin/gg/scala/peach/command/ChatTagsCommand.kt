@@ -1,6 +1,6 @@
-package com.solexgames.peach.command
+package gg.scala.peach.command
 
-import com.solexgames.peach.menu.ChatTagsMenu
+import gg.scala.peach.menu.ChatTagsMenu
 import net.evilblock.cubed.acf.BaseCommand
 import net.evilblock.cubed.acf.annotation.CommandAlias
 import org.bukkit.entity.Player
