@@ -3,7 +3,7 @@ package gg.scala.peach.handler
 import com.solexgames.datastore.commons.connection.impl.mongo.UriMongoConnection
 import com.solexgames.datastore.commons.layer.impl.MongoStorageLayer
 import com.solexgames.datastore.commons.storage.impl.MongoStorageBuilder
-import com.solexgames.lemon.Lemon
+import gg.scala.lemon.Lemon
 import gg.scala.peach.model.ChatTag
 import net.evilblock.cubed.serializers.Serializers
 

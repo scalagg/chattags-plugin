@@ -1,7 +1,7 @@
 package gg.scala.peach.command
 
-import com.solexgames.lemon.Lemon
-import com.solexgames.lemon.handler.RedisHandler
+import gg.scala.lemon.Lemon
+import gg.scala.lemon.handler.RedisHandler
 import gg.scala.peach.PeachSpigotPlugin
 import gg.scala.peach.model.ChatTag
 import net.evilblock.cubed.acf.BaseCommand

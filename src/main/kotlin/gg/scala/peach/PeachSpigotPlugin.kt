@@ -1,8 +1,8 @@
 package gg.scala.peach
 
-import com.solexgames.lemon.Lemon
-import com.solexgames.lemon.player.metadata.Metadata
-import com.solexgames.lemon.player.rank.Rank
+import gg.scala.lemon.Lemon
+import gg.scala.lemon.player.metadata.Metadata
+import gg.scala.lemon.player.rank.Rank
 import gg.scala.peach.channel.ChatTagDefaultChannel
 import gg.scala.peach.command.ChatTagsAdminCommand
 import gg.scala.peach.command.ChatTagsCommand

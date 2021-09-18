@@ -1,7 +1,7 @@
 package gg.scala.peach.model
 
-import com.solexgames.lemon.handler.RedisHandler
-import com.solexgames.lemon.util.type.Savable
+import gg.scala.lemon.handler.RedisHandler
+import gg.scala.lemon.util.type.Savable
 import gg.scala.peach.PeachSpigotPlugin
 import net.evilblock.cubed.util.CC
 import java.util.*

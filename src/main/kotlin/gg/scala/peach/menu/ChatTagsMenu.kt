@@ -1,7 +1,7 @@
 package gg.scala.peach.menu
 
 import com.cryptomorin.xseries.XMaterial
-import com.solexgames.lemon.Lemon
+import gg.scala.lemon.Lemon
 import gg.scala.peach.PeachSpigotPlugin
 import gg.scala.peach.model.ChatTag
 import gg.scala.peach.model.ChatTagPlayer
