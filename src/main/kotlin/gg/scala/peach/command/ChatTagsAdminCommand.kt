@@ -1,8 +1,11 @@
 package gg.scala.peach.command
 
 import gg.scala.lemon.Lemon
+import gg.scala.lemon.handler.PlayerHandler
 import gg.scala.lemon.handler.RedisHandler
 import gg.scala.peach.PeachSpigotPlugin
+import gg.scala.peach.handler.ChatTagHandler
+import gg.scala.peach.handler.MongoHandler
 import gg.scala.peach.model.ChatTag
 import net.evilblock.cubed.acf.BaseCommand
 import net.evilblock.cubed.acf.CommandHelp
@@ -33,7 +36,7 @@ class ChatTagsAdminCommand : BaseCommand() {
     @Subcommand("list")
     @Description("View all chat-tags.")
     fun onList(sender: CommandSender) {
-        val chatTagList = PeachSpigotPlugin.instance.chatTagHandler.chatTags
+        val chatTagList = ChatTagHandler.chatTags
 
         if (chatTagList.isEmpty()) {
             throw ConditionFailedException("There are no chat-tags.")
@@ -67,7 +70,7 @@ class ChatTagsAdminCommand : BaseCommand() {
         target.player.sendMessage("${CC.GREEN}You've been granted the ${CC.WHITE}${chatTag.displayName}${CC.GREEN} tag.")
         target.player.sendMessage("${CC.GRAY}Equip your new tag using /tags.")
 
-        Lemon.instance.playerHandler.findPlayer(target.player.uniqueId).orElse(null)?.save()
+        PlayerHandler.findPlayer(target.player.uniqueId).orElse(null)?.save()
 
         sender.sendMessage("${CC.SEC}You've granted ${CC.WHITE}${target.player.name}${CC.SEC} the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat-tag.")
     }
@@ -85,7 +88,7 @@ class ChatTagsAdminCommand : BaseCommand() {
         }
 
         chatTagPlayer.ownedTags.remove(chatTag.uniqueId)
-        Lemon.instance.playerHandler.findPlayer(target.player.uniqueId).orElse(null)?.save()
+        PlayerHandler.findPlayer(target.player.uniqueId).orElse(null)?.save()
 
         sender.sendMessage("${CC.SEC}You've removed ${CC.WHITE}${target.player.name}'s${CC.SEC} access to the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat-tag.")
     }
@@ -95,7 +98,7 @@ class ChatTagsAdminCommand : BaseCommand() {
     @Description("Create a new chat-tag.")
     @CommandPermission("peach.command.cta.management")
     fun onCreate(sender: CommandSender, @Single name: String) {
-        val existing = PeachSpigotPlugin.instance.chatTagHandler.findChatTag(name)
+        val existing = ChatTagHandler.findChatTag(name)
 
         if (existing != null) {
             throw ConditionFailedException("A chat tag with the name matching ${CC.YELLOW}$name${CC.RED} already exists.")
@@ -127,13 +130,13 @@ class ChatTagsAdminCommand : BaseCommand() {
     @Description("Delete an existing chat-tag.")
     @CommandPermission("peach.command.cta.management")
     fun onDelete(sender: CommandSender, chatTag: ChatTag) {
-        PeachSpigotPlugin.instance.mongoHandler.chatTagLayer.deleteEntry(chatTag.uniqueId.toString()).thenAccept {
+        MongoHandler.chatTagLayer.deleteEntry(chatTag.uniqueId.toString()).thenAccept {
             RedisHandler.buildMessage(
                 "chat-tag-delete",
                 hashMapOf<String, String>().also {
                     it["uniqueId"] = chatTag.uniqueId.toString()
                 }
-            ).publishAsync("peach")
+            ).dispatch("peach")
 
             sender.sendMessage("${CC.SEC}You've deleted the ${CC.WHITE}${chatTag.displayName}${CC.SEC} rank.")
         }

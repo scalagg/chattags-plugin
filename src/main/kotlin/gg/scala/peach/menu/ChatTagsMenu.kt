@@ -2,7 +2,9 @@ package gg.scala.peach.menu
 
 import com.cryptomorin.xseries.XMaterial
 import gg.scala.lemon.Lemon
+import gg.scala.lemon.handler.PlayerHandler
 import gg.scala.peach.PeachSpigotPlugin
+import gg.scala.peach.handler.ChatTagHandler
 import gg.scala.peach.model.ChatTag
 import gg.scala.peach.model.ChatTagPlayer
 import net.evilblock.cubed.menu.Button
@@ -29,7 +31,7 @@ class ChatTagsMenu : PaginatedMenu() {
         return hashMapOf<Int, Button>().also {
             val chatTagPlayer = PeachSpigotPlugin.instance.players[player.uniqueId]!!
 
-            PeachSpigotPlugin.instance.chatTagHandler.chatTags.values.forEach { chatTag ->
+            ChatTagHandler.chatTags.values.forEach { chatTag ->
                 it[it.size] = ChatTagButton(chatTag, chatTagPlayer)
             }
         }
@@ -109,7 +111,7 @@ class ChatTagsMenu : PaginatedMenu() {
 
             chatTagPlayer.currentChatTag = chatTag.uniqueId
 
-            Lemon.instance.playerHandler.findPlayer(player.uniqueId).orElse(null)?.save()
+            PlayerHandler.findPlayer(player.uniqueId).orElse(null)?.save()
 
             player.sendMessage("${CC.SEC}You've equipped the ${CC.PRI}${chatTag.displayName} ${CC.GRAY}(${chatTag.value}${CC.GRAY})${CC.SEC} chat tag.")
         }

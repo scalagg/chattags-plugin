@@ -3,6 +3,7 @@ package gg.scala.peach.model
 import gg.scala.lemon.handler.RedisHandler
 import gg.scala.lemon.util.type.Savable
 import gg.scala.peach.PeachSpigotPlugin
+import gg.scala.peach.handler.MongoHandler
 import net.evilblock.cubed.util.CC
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -18,7 +19,7 @@ data class ChatTag(
 ) : Savable {
 
     override fun save(): CompletableFuture<Void> {
-        return PeachSpigotPlugin.instance.mongoHandler.chatTagLayer.saveEntry(
+        return MongoHandler.chatTagLayer.saveEntry(
             uniqueId.toString(), this
         )
     }
@@ -30,7 +31,7 @@ data class ChatTag(
                 hashMapOf<String, String>().also {
                     it["uniqueId"] = uniqueId.toString()
                 }
-            ).publishAsync("peach")
+            ).dispatch("peach")
 
             return@thenApply null
         }

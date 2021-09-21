@@ -2,6 +2,7 @@ package gg.scala.peach.channel
 
 import gg.scala.lemon.player.channel.impl.DefaultChannel
 import gg.scala.peach.PeachSpigotPlugin
+import gg.scala.peach.handler.ChatTagHandler
 import org.bukkit.entity.Player
 
 /**
@@ -17,7 +18,7 @@ class ChatTagDefaultChannel : DefaultChannel() {
             if (it.currentChatTag == null) {
                 ""
             } else {
-                val chatTag = PeachSpigotPlugin.instance.chatTagHandler.chatTags[it.currentChatTag]
+                val chatTag = ChatTagHandler.chatTags[it.currentChatTag]
 
                 if (chatTag == null) {
                     ""

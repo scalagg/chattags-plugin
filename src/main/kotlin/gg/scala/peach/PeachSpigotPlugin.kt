@@ -1,30 +1,25 @@
 package gg.scala.peach
 
+import gg.scala.banana.BananaBuilder
+import gg.scala.banana.options.BananaOptions
 import gg.scala.lemon.Lemon
+import gg.scala.lemon.handler.ChatHandler
+import gg.scala.lemon.handler.PlayerHandler
 import gg.scala.lemon.player.metadata.Metadata
-import gg.scala.lemon.player.rank.Rank
 import gg.scala.peach.channel.ChatTagDefaultChannel
-import gg.scala.peach.command.ChatTagsAdminCommand
-import gg.scala.peach.command.ChatTagsCommand
 import gg.scala.peach.handler.ChatTagHandler
-import gg.scala.peach.handler.MongoHandler
 import gg.scala.peach.handler.PeachRedisHandler
 import gg.scala.peach.model.ChatTag
 import gg.scala.peach.model.ChatTagPlayer
-import com.solexgames.redis.JedisBuilder
 import me.lucko.helper.Events
 import me.lucko.helper.plugin.ExtendedJavaPlugin
 import net.evilblock.cubed.acf.ConditionFailedException
-import net.evilblock.cubed.acf.MessageType
 import net.evilblock.cubed.command.manager.CubedCommandManager
 import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.util.CC
-import org.bukkit.Bukkit
 import org.bukkit.ChatColor
-import org.bukkit.Material
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
-import org.bukkit.inventory.ItemStack
 import java.util.*
 
 /**
@@ -38,28 +33,21 @@ class PeachSpigotPlugin : ExtendedJavaPlugin() {
         lateinit var instance: PeachSpigotPlugin
     }
 
-    lateinit var mongoHandler: MongoHandler
-    lateinit var chatTagHandler: ChatTagHandler
-
     val players = mutableMapOf<UUID, ChatTagPlayer>()
 
     override fun enable() {
         instance = this
 
-        mongoHandler = MongoHandler
-        chatTagHandler = ChatTagHandler
-
         loadCommands()
         loadRedisHandler()
         loadListeners()
 
-        Lemon.instance.chatHandler.channels["default"] = ChatTagDefaultChannel()
+        ChatHandler.channels["default"] = ChatTagDefaultChannel()
     }
 
     private fun loadListeners() {
         Events.subscribe(PlayerJoinEvent::class.java).handler {
-            val lemonPlayer = Lemon.instance.playerHandler
-                .findPlayer(it.player.uniqueId).orElse(null)
+            val lemonPlayer = PlayerHandler.findPlayer(it.player.uniqueId).orElse(null)
 
             if (lemonPlayer != null) {
                 val chatTagPlayerData = lemonPlayer.getMetadata("chat-tag-player")
@@ -85,8 +73,7 @@ class PeachSpigotPlugin : ExtendedJavaPlugin() {
         }
 
         Events.subscribe(PlayerQuitEvent::class.java).handler {
-            val lemonPlayer = Lemon.instance.playerHandler
-                .findPlayer(it.player.uniqueId).orElse(null)
+            val lemonPlayer = PlayerHandler.findPlayer(it.player.uniqueId).orElse(null)
 
             if (lemonPlayer != null) {
                 val serialized = Serializers.gson.toJson(players[it.player.uniqueId])
@@ -100,11 +87,20 @@ class PeachSpigotPlugin : ExtendedJavaPlugin() {
     }
 
     private fun loadRedisHandler() {
-        JedisBuilder()
-            .withChannel("peach")
-            .withHandler(PeachRedisHandler)
-            .withSettings(Lemon.instance.jedisSettings)
+        val banana = BananaBuilder()
+            .options(
+                BananaOptions(
+                    channel = "peach",
+                    async = true,
+                    gson = Serializers.gson
+                )
+            )
+            .credentials(
+                Lemon.instance.credentials
+            )
             .build()
+
+        banana.registerClass(PeachRedisHandler)
     }
 
     private fun loadCommands() {
@@ -116,7 +112,7 @@ class PeachSpigotPlugin : ExtendedJavaPlugin() {
 
         commandManager.commandCompletions.registerAsyncCompletion("chattags") {
             return@registerAsyncCompletion mutableListOf<String>().also {
-                chatTagHandler.chatTags.values.forEach { chatTag ->
+                ChatTagHandler.chatTags.values.forEach { chatTag ->
                     it.add(chatTag.displayName)
                 }
             }
@@ -125,7 +121,7 @@ class PeachSpigotPlugin : ExtendedJavaPlugin() {
         commandManager.commandContexts.registerContext(ChatTag::class.java) {
             val firstArgument = it.popFirstArg()
 
-            return@registerContext chatTagHandler.findChatTag(firstArgument)
+            return@registerContext ChatTagHandler.findChatTag(firstArgument)
                 ?: throw ConditionFailedException("No chat-tag matching ${CC.YELLOW}$firstArgument${CC.RED} could be found.")
         }
 
