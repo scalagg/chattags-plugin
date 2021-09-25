@@ -101,6 +101,7 @@ class PeachSpigotPlugin : ExtendedJavaPlugin() {
             .build()
 
         banana.registerClass(PeachRedisHandler)
+        banana.subscribe()
     }
 
     private fun loadCommands() {
@@ -111,11 +112,7 @@ class PeachSpigotPlugin : ExtendedJavaPlugin() {
         )
 
         commandManager.commandCompletions.registerAsyncCompletion("chattags") {
-            return@registerAsyncCompletion mutableListOf<String>().also {
-                ChatTagHandler.chatTags.values.forEach { chatTag ->
-                    it.add(chatTag.displayName)
-                }
-            }
+            return@registerAsyncCompletion ChatTagHandler.chatTags.values.map { it.displayName }
         }
 
         commandManager.commandContexts.registerContext(ChatTag::class.java) {
