@@ -125,6 +125,6 @@ class PeachSpigotPlugin : ExtendedJavaPlugin() {
                 ?: throw ConditionFailedException("No chat-tag matching ${CC.YELLOW}$firstArgument${CC.RED} could be found.")
         }
 
-        Lemon.instance.registerCommandsInPackage(commandManager, "com.solexgames.peach.command")
+        Lemon.instance.registerCommandsInPackage(commandManager, "gg.scala.peach.command")
     }
 }
