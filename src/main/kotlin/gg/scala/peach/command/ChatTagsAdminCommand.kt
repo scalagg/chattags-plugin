@@ -104,16 +104,12 @@ class ChatTagsAdminCommand : BaseCommand() {
             throw ConditionFailedException("A chat tag with the name matching ${CC.YELLOW}$name${CC.RED} already exists.")
         }
 
-        if (name.length < 3) {
-            throw ConditionFailedException("${CC.YELLOW}$name${CC.RED} must be at least 3 characters long.")
+        if (name.isBlank()) {
+            throw ConditionFailedException("${CC.YELLOW}$name${CC.RED} must be at least 1 character long.")
         }
 
         if (name.length > 16) {
             throw ConditionFailedException("${CC.YELLOW}$name${CC.RED} must be at most 16 characters long.")
-        }
-
-        if (!StringUtils.isAlphanumeric(name)) {
-            throw ConditionFailedException("${CC.YELLOW}$name${CC.RED} must only contain alphanumeric characters.")
         }
 
         val chatTag = ChatTag(UUID.randomUUID(), name)
