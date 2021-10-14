@@ -17,7 +17,7 @@ repositories {
 dependencies {
     implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.5.30'
 
-    compileOnly fileTree(dir: "lib")
+    compileOnly fileTree("lib")
 }
 
 shadowJar {

@@ -1,8 +1,7 @@
 package gg.scala.peach.model
 
+import gg.scala.common.Savable
 import gg.scala.lemon.handler.RedisHandler
-import gg.scala.lemon.util.type.Savable
-import gg.scala.peach.PeachSpigotPlugin
 import gg.scala.peach.handler.MongoHandler
 import net.evilblock.cubed.util.CC
 import java.util.*
@@ -16,7 +15,8 @@ data class ChatTag(
     val uniqueId: UUID,
     var displayName: String,
     var value: String = CC.GRAY,
-) : Savable {
+) : Savable
+{
 
     override fun save(): CompletableFuture<Void> {
         return MongoHandler.chatTagLayer.saveEntry(
