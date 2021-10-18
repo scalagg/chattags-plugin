@@ -7,10 +7,12 @@ import gg.scala.peach.PeachSpigotPlugin
 import gg.scala.peach.handler.ChatTagHandler
 import gg.scala.peach.handler.MongoHandler
 import gg.scala.peach.model.ChatTag
+import gg.scala.peach.result.ChatTagPaginatedResult
 import net.evilblock.cubed.acf.BaseCommand
 import net.evilblock.cubed.acf.CommandHelp
 import net.evilblock.cubed.acf.ConditionFailedException
 import net.evilblock.cubed.acf.annotation.*
+import net.evilblock.cubed.acf.annotation.Optional
 import net.evilblock.cubed.acf.bukkit.contexts.OnlinePlayer
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Color
@@ -35,22 +37,17 @@ class ChatTagsAdminCommand : BaseCommand() {
 
     @Subcommand("list")
     @Description("View all chat-tags.")
-    fun onList(sender: CommandSender) {
+    fun onList(sender: CommandSender, @Optional page: Int?) {
         val chatTagList = ChatTagHandler.chatTags
 
         if (chatTagList.isEmpty()) {
             throw ConditionFailedException("There are no chat-tags.")
         }
 
-        sender.sendMessage(arrayOf(
-            "${CC.B_PRI}Available Chat Tags:",
-            "${CC.SEC}${chatTagList.size}${CC.GRAY} chat-tags found.",
-            ""
-        ))
-
-        chatTagList.forEach {
-            sender.sendMessage("${CC.GRAY} - ${CC.WHITE}${it.value.displayName} ${CC.GRAY}(${it.value.value}${CC.GRAY})")
-        }
+        ChatTagPaginatedResult.display(
+            sender, chatTagList.values.toList(),
+            page ?: 1, "cta list %s"
+        )
     }
 
     @Subcommand("add")
@@ -132,7 +129,9 @@ class ChatTagsAdminCommand : BaseCommand() {
                 hashMapOf<String, String>().also {
                     it["uniqueId"] = chatTag.uniqueId.toString()
                 }
-            ).dispatch("peach")
+            ).dispatch(
+                PeachSpigotPlugin.instance.banana
+            )
 
             sender.sendMessage("${CC.SEC}You've deleted the ${CC.WHITE}${chatTag.displayName}${CC.SEC} rank.")
         }

@@ -1,18 +1,20 @@
 package gg.scala.peach
 
+import gg.scala.banana.Banana
 import gg.scala.banana.BananaBuilder
 import gg.scala.banana.options.BananaOptions
+import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.lemon.Lemon
 import gg.scala.lemon.handler.ChatHandler
 import gg.scala.lemon.handler.PlayerHandler
 import gg.scala.lemon.player.metadata.Metadata
+import gg.scala.peach.adventure.KyoriBridge
 import gg.scala.peach.channel.ChatTagDefaultChannel
 import gg.scala.peach.handler.ChatTagHandler
 import gg.scala.peach.handler.PeachRedisHandler
 import gg.scala.peach.model.ChatTag
 import gg.scala.peach.model.ChatTagPlayer
 import me.lucko.helper.Events
-import me.lucko.helper.plugin.ExtendedJavaPlugin
 import net.evilblock.cubed.acf.ConditionFailedException
 import net.evilblock.cubed.command.manager.CubedCommandManager
 import net.evilblock.cubed.serializers.Serializers
@@ -26,7 +28,7 @@ import java.util.*
  * @author GrowlyX
  * @since 9/11/2021
  */
-class PeachSpigotPlugin : ExtendedJavaPlugin() {
+class PeachSpigotPlugin : ExtendedScalaPlugin() {
 
     companion object {
         @JvmStatic
@@ -35,6 +37,8 @@ class PeachSpigotPlugin : ExtendedJavaPlugin() {
 
     val players = mutableMapOf<UUID, ChatTagPlayer>()
 
+    lateinit var banana: Banana
+
     override fun enable() {
         instance = this
 
@@ -42,7 +46,9 @@ class PeachSpigotPlugin : ExtendedJavaPlugin() {
         loadRedisHandler()
         loadListeners()
 
-        ChatHandler.channels["default"] = ChatTagDefaultChannel()
+        ChatHandler.channels["default"] = ChatTagDefaultChannel
+
+        KyoriBridge.initialLoad()
     }
 
     private fun loadListeners() {
@@ -87,7 +93,7 @@ class PeachSpigotPlugin : ExtendedJavaPlugin() {
     }
 
     private fun loadRedisHandler() {
-        val banana = BananaBuilder()
+        banana = BananaBuilder()
             .options(
                 BananaOptions(
                     channel = "peach",
@@ -123,5 +129,10 @@ class PeachSpigotPlugin : ExtendedJavaPlugin() {
         }
 
         Lemon.instance.registerCommandsInPackage(commandManager, "gg.scala.peach.command")
+    }
+
+    override fun disable()
+    {
+        KyoriBridge.finalSave()
     }
 }
