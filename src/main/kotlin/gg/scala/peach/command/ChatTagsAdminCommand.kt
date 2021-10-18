@@ -4,10 +4,12 @@ import gg.scala.lemon.Lemon
 import gg.scala.lemon.handler.PlayerHandler
 import gg.scala.lemon.handler.RedisHandler
 import gg.scala.peach.PeachSpigotPlugin
+import gg.scala.peach.adventure.KyoriBridge
 import gg.scala.peach.handler.ChatTagHandler
 import gg.scala.peach.handler.MongoHandler
 import gg.scala.peach.model.ChatTag
 import gg.scala.peach.result.ChatTagPaginatedResult
+import me.lucko.helper.text.Component
 import net.evilblock.cubed.acf.BaseCommand
 import net.evilblock.cubed.acf.CommandHelp
 import net.evilblock.cubed.acf.ConditionFailedException
@@ -16,8 +18,11 @@ import net.evilblock.cubed.acf.annotation.Optional
 import net.evilblock.cubed.acf.bukkit.contexts.OnlinePlayer
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Color
+import net.kyori.adventure.text.format.TextColor
+import net.kyori.adventure.text.minimessage.MiniMessage
 import org.apache.commons.lang3.StringUtils
 import org.bukkit.command.CommandSender
+import org.bukkit.entity.Player
 import java.util.*
 
 /**
@@ -33,6 +38,20 @@ class ChatTagsAdminCommand : BaseCommand() {
     @Syntax("[help]")
     fun onHelp(help: CommandHelp) {
         help.showHelp()
+    }
+
+    @Subcommand("parse")
+    fun onParse(player: Player, message: String)
+    {
+        val miniMessage = MiniMessage.get().parse(message)
+
+        val component = net.kyori.adventure.text.Component.text(
+            "Your parsed mini-message: ", TextColor.color(255, 255, 0)
+        )
+
+        KyoriBridge.adventure().player(player).sendMessage(
+            component.append(miniMessage)
+        )
     }
 
     @Subcommand("list")
