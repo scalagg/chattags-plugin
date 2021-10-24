@@ -185,6 +185,19 @@ class ChatTagsAdminCommand : BaseCommand()
         }
     }
 
+    @Subcommand("tools colorize")
+    @Description("Convert chat-colors to color chars on each tag.")
+    fun onColorize(sender: CommandSender)
+    {
+        ChatTagHandler.chatTags.forEach {
+            it.value.value = Color.translate(it.value.value)
+
+            it.value.saveAndPushUpdatesGlobally()
+        }
+
+        sender.sendMessage("${CC.GREEN}Finished!")
+    }
+
     @Subcommand("tools convert")
     @Description("Convert from an existing list of prefixes.")
     fun onConvertTool(sender: CommandSender, url: String)

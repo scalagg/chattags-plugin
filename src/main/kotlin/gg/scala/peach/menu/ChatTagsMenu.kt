@@ -95,7 +95,7 @@ class ChatTagsMenu : PaginatedMenu()
             lore.add(chatTag.value)
             lore.add("")
             lore.add(
-                if (ownsPrefix)
+                if (!player.hasPermission("peach.all-chattags") || !ownsPrefix)
                 {
                     "${CC.GREEN}Click to equip this tag."
                 } else
@@ -111,7 +111,7 @@ class ChatTagsMenu : PaginatedMenu()
 
         override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView)
         {
-            if (!player.hasPermission("peach.all-chattags"))
+            if (!player.hasPermission("peach.all-chattags") || !player.isOp)
             {
                 if (!chatTagPlayer.ownedTags.contains(chatTag.uniqueId))
                 {
@@ -128,6 +128,7 @@ class ChatTagsMenu : PaginatedMenu()
 
             chatTagPlayer.currentChatTag = chatTag.uniqueId
 
+            PeachSpigotPlugin.instance.finalizePlayer(player)
             PlayerHandler.findPlayer(player.uniqueId).orElse(null)?.save()
 
             player.sendMessage("${CC.SEC}You've equipped the ${CC.PRI}${chatTag.displayName} ${CC.GRAY}(${chatTag.value}${CC.GRAY})${CC.SEC} chat tag.")

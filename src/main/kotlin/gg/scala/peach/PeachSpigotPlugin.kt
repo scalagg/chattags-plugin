@@ -20,6 +20,7 @@ import net.evilblock.cubed.command.manager.CubedCommandManager
 import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.util.CC
 import org.bukkit.ChatColor
+import org.bukkit.entity.Player
 import org.bukkit.event.player.PlayerJoinEvent
 import org.bukkit.event.player.PlayerQuitEvent
 import java.util.*
@@ -79,16 +80,21 @@ class PeachSpigotPlugin : ExtendedScalaPlugin() {
         }
 
         Events.subscribe(PlayerQuitEvent::class.java).handler {
-            val lemonPlayer = PlayerHandler.findPlayer(it.player.uniqueId).orElse(null)
+            finalizePlayer(it.player)
+        }
+    }
 
-            if (lemonPlayer != null) {
-                val serialized = Serializers.gson.toJson(players[it.player.uniqueId])
+    fun finalizePlayer(player: Player)
+    {
+        val lemonPlayer = PlayerHandler.findPlayer(player.uniqueId).orElse(null)
 
-                lemonPlayer.updateOrAddMetadata(
-                    "chat-tag-player",
-                    Metadata(serialized)
-                )
-            }
+        if (lemonPlayer != null) {
+            val serialized = Serializers.gson.toJson(players[player.uniqueId])
+
+            lemonPlayer.updateOrAddMetadata(
+                "chat-tag-player",
+                Metadata(serialized)
+            )
         }
     }
 
