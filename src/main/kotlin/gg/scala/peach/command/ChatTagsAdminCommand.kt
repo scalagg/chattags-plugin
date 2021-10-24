@@ -189,27 +189,21 @@ class ChatTagsAdminCommand : BaseCommand()
     @Description("Convert from an existing list of prefixes.")
     fun onConvertTool(sender: CommandSender, url: String)
     {
-        try
+        val handle = URL(url)
+        val content = StringBuilder()
+        val urlConnection = handle.openConnection()
+
+        val bufferedReader = BufferedReader(InputStreamReader(urlConnection.getInputStream()))
+        var line: String?
+
+        while (bufferedReader.readLine().also { line = it } != null)
         {
-            val handle = URL(url)
-            val content = StringBuilder()
-            val urlConnection = handle.openConnection()
-
-            val bufferedReader = BufferedReader(InputStreamReader(urlConnection.getInputStream()))
-            var line: String
-
-            while (bufferedReader.readLine().also { line = it } != null)
-            {
-                content.append(line)
-            }
-
-            bufferedReader.close()
-
-            DeprecatedPrefixConverter.convert(content.toString(), sender)
-        } catch (e: Exception)
-        {
-            throw ConditionFailedException("Sorry, we couldn't convert your prefixes.")
+            content.append(line)
         }
+
+        bufferedReader.close()
+
+        DeprecatedPrefixConverter.convert(content.toString(), sender)
     }
 
 }
