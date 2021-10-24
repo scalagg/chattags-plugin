@@ -4,6 +4,7 @@ import gg.scala.lemon.handler.PlayerHandler
 import gg.scala.lemon.handler.RedisHandler
 import gg.scala.peach.PeachSpigotPlugin
 import gg.scala.peach.adventure.KyoriBridge
+import gg.scala.peach.conversion.DeprecatedPrefixConverter
 import gg.scala.peach.handler.ChatTagHandler
 import gg.scala.peach.handler.MongoHandler
 import gg.scala.peach.model.ChatTag
@@ -203,6 +204,8 @@ class ChatTagsAdminCommand : BaseCommand()
             }
 
             bufferedReader.close()
+
+            DeprecatedPrefixConverter.convert(content.toString(), sender)
         } catch (e: Exception)
         {
             throw ConditionFailedException("Sorry, we couldn't convert your prefixes.")
