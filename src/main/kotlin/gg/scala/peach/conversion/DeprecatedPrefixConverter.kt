@@ -7,6 +7,7 @@ import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.util.CC
 import org.bukkit.command.CommandSender
 import java.lang.reflect.Type
+import java.util.*
 
 /**
  * @author GrowlyX
@@ -32,6 +33,11 @@ object DeprecatedPrefixConverter
                 sender.sendMessage("${CC.RED}Skipping ${it.name} as a chat-tag with that name already exists.")
                 return@forEach
             }
+
+            val newModel = ChatTag(UUID.randomUUID(), it.displayName, it.prefix)
+            newModel.saveAndPushUpdatesGlobally()
+
+            sender.sendMessage("${CC.GREEN}Successfully converted ${CC.YELLOW}${newModel.displayName}${CC.GREEN}.")
         }
     }
 }

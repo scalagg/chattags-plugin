@@ -1,6 +1,5 @@
 package gg.scala.peach.command
 
-import gg.scala.lemon.Lemon
 import gg.scala.lemon.handler.PlayerHandler
 import gg.scala.lemon.handler.RedisHandler
 import gg.scala.peach.PeachSpigotPlugin
@@ -9,7 +8,6 @@ import gg.scala.peach.handler.ChatTagHandler
 import gg.scala.peach.handler.MongoHandler
 import gg.scala.peach.model.ChatTag
 import gg.scala.peach.result.ChatTagPaginatedResult
-import me.lucko.helper.text.Component
 import net.evilblock.cubed.acf.BaseCommand
 import net.evilblock.cubed.acf.CommandHelp
 import net.evilblock.cubed.acf.ConditionFailedException
@@ -20,10 +18,13 @@ import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Color
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
-import org.apache.commons.lang3.StringUtils
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.URL
 import java.util.*
+
 
 /**
  * @author GrowlyX
@@ -31,12 +32,14 @@ import java.util.*
  */
 @CommandAlias("peach|chattagadmin|cta")
 @CommandPermission("peach.command.cta")
-class ChatTagsAdminCommand : BaseCommand() {
+class ChatTagsAdminCommand : BaseCommand()
+{
 
     @Default
     @HelpCommand
     @Syntax("[help]")
-    fun onHelp(help: CommandHelp) {
+    fun onHelp(help: CommandHelp)
+    {
         help.showHelp()
     }
 
@@ -56,10 +59,12 @@ class ChatTagsAdminCommand : BaseCommand() {
 
     @Subcommand("list")
     @Description("View all chat-tags.")
-    fun onList(sender: CommandSender, @Optional page: Int?) {
+    fun onList(sender: CommandSender, @Optional page: Int?)
+    {
         val chatTagList = ChatTagHandler.chatTags
 
-        if (chatTagList.isEmpty()) {
+        if (chatTagList.isEmpty())
+        {
             throw ConditionFailedException("There are no chat-tags.")
         }
 
@@ -73,11 +78,13 @@ class ChatTagsAdminCommand : BaseCommand() {
     @Syntax("<player> <chatTag>")
     @CommandCompletion("@all-players @chattags")
     @Description("Give a player a chat-tag.")
-    fun onAdd(sender: CommandSender, target: OnlinePlayer, chatTag: ChatTag) {
+    fun onAdd(sender: CommandSender, target: OnlinePlayer, chatTag: ChatTag)
+    {
         val chatTagPlayer = PeachSpigotPlugin.instance.players[target.player.uniqueId]
             ?: throw ConditionFailedException("That player does not exist.")
 
-        if (chatTagPlayer.ownedTags.contains(chatTag.uniqueId)) {
+        if (chatTagPlayer.ownedTags.contains(chatTag.uniqueId))
+        {
             throw ConditionFailedException("${CC.YELLOW}${target.player.name}${CC.RED} already owns the ${CC.YELLOW}${chatTag.displayName}${CC.RED} chat-tag.")
         }
 
@@ -95,11 +102,13 @@ class ChatTagsAdminCommand : BaseCommand() {
     @Syntax("<player> <chatTag>")
     @CommandCompletion("@all-players @chattags")
     @Description("Remove access to a chat-tag.")
-    fun onRemove(sender: CommandSender, target: OnlinePlayer, chatTag: ChatTag) {
+    fun onRemove(sender: CommandSender, target: OnlinePlayer, chatTag: ChatTag)
+    {
         val chatTagPlayer = PeachSpigotPlugin.instance.players[target.player.uniqueId]
             ?: throw ConditionFailedException("That player does not exist.")
 
-        if (!chatTagPlayer.ownedTags.contains(chatTag.uniqueId)) {
+        if (!chatTagPlayer.ownedTags.contains(chatTag.uniqueId))
+        {
             throw ConditionFailedException("${CC.YELLOW}${target.player.name}${CC.RED} does not own the ${CC.YELLOW}${chatTag.displayName}${CC.RED} chat-tag.")
         }
 
@@ -113,18 +122,22 @@ class ChatTagsAdminCommand : BaseCommand() {
     @Subcommand("create")
     @Description("Create a new chat-tag.")
     @CommandPermission("peach.command.cta.management")
-    fun onCreate(sender: CommandSender, @Single name: String) {
+    fun onCreate(sender: CommandSender, @Single name: String)
+    {
         val existing = ChatTagHandler.findChatTag(name)
 
-        if (existing != null) {
+        if (existing != null)
+        {
             throw ConditionFailedException("A chat tag with the name matching ${CC.YELLOW}$name${CC.RED} already exists.")
         }
 
-        if (name.isBlank()) {
+        if (name.isBlank())
+        {
             throw ConditionFailedException("${CC.YELLOW}$name${CC.RED} must be at least 1 character long.")
         }
 
-        if (name.length > 16) {
+        if (name.length > 16)
+        {
             throw ConditionFailedException("${CC.YELLOW}$name${CC.RED} must be at most 16 characters long.")
         }
 
@@ -141,7 +154,8 @@ class ChatTagsAdminCommand : BaseCommand() {
     @CommandCompletion("@chattags")
     @Description("Delete an existing chat-tag.")
     @CommandPermission("peach.command.cta.management")
-    fun onDelete(sender: CommandSender, chatTag: ChatTag) {
+    fun onDelete(sender: CommandSender, chatTag: ChatTag)
+    {
         MongoHandler.chatTagLayer.deleteEntry(chatTag.uniqueId.toString()).thenAccept {
             RedisHandler.buildMessage(
                 "chat-tag-delete",
@@ -161,11 +175,37 @@ class ChatTagsAdminCommand : BaseCommand() {
     @CommandCompletion("@chattags")
     @Description("Edit a chat-tags design.")
     @CommandPermission("peach.command.cta.meta.edit")
-    fun onMetaDesign(sender: CommandSender, chatTag: ChatTag, design: String) {
+    fun onMetaDesign(sender: CommandSender, chatTag: ChatTag, design: String)
+    {
         chatTag.value = Color.translate(design)
 
         chatTag.saveAndPushUpdatesGlobally().thenAccept {
             sender.sendMessage("${CC.SEC}You've updated ${CC.WHITE}${chatTag.displayName}'s${CC.SEC} design to ${chatTag.value}${CC.SEC}.")
+        }
+    }
+
+    @Subcommand("tools convert")
+    @Description("Convert from an existing list of prefixes.")
+    fun onConvertTool(sender: CommandSender, url: String)
+    {
+        try
+        {
+            val handle = URL(url)
+            val content = StringBuilder()
+            val urlConnection = handle.openConnection()
+
+            val bufferedReader = BufferedReader(InputStreamReader(urlConnection.getInputStream()))
+            var line: String
+
+            while (bufferedReader.readLine().also { line = it } != null)
+            {
+                content.append(line)
+            }
+
+            bufferedReader.close()
+        } catch (e: Exception)
+        {
+            throw ConditionFailedException("Sorry, we couldn't convert your prefixes.")
         }
     }
 
