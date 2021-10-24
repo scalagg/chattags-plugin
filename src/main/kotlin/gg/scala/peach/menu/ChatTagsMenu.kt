@@ -20,13 +20,16 @@ import org.bukkit.inventory.ItemStack
  * @author GrowlyX
  * @since 9/11/2021
  */
-class ChatTagsMenu : PaginatedMenu() {
+class ChatTagsMenu : PaginatedMenu()
+{
 
-    override fun getPrePaginatedTitle(player: Player): String {
+    override fun getPrePaginatedTitle(player: Player): String
+    {
         return "Chat Tags"
     }
 
-    override fun getAllPagesButtons(player: Player): Map<Int, Button> {
+    override fun getAllPagesButtons(player: Player): Map<Int, Button>
+    {
         return hashMapOf<Int, Button>().also {
             val chatTagPlayer = PeachSpigotPlugin.instance.players[player.uniqueId]!!
 
@@ -36,7 +39,8 @@ class ChatTagsMenu : PaginatedMenu() {
         }
     }
 
-    override fun getGlobalButtons(player: Player): Map<Int, Button> {
+    override fun getGlobalButtons(player: Player): Map<Int, Button>
+    {
         return hashMapOf<Int, Button>().also {
             it[4] = ItemBuilder(Material.BED)
                 .name("${CC.RED}Reset Tag")
@@ -47,10 +51,12 @@ class ChatTagsMenu : PaginatedMenu() {
                     "${CC.YELLOW}Click to reset."
                 )
                 .toButton { clicker, _ ->
-                    if (clicker != null) {
+                    if (clicker != null)
+                    {
                         val chatTagPlayer = PeachSpigotPlugin.instance.players[player.uniqueId]!!
 
-                        if (chatTagPlayer.currentChatTag == null) {
+                        if (chatTagPlayer.currentChatTag == null)
+                        {
                             clicker.sendMessage("${CC.RED}You don't have a tag equipped.")
                             return@toButton
                         }
@@ -66,18 +72,22 @@ class ChatTagsMenu : PaginatedMenu() {
     class ChatTagButton(
         private val chatTag: ChatTag,
         private val chatTagPlayer: ChatTagPlayer
-    ) : Button() {
+    ) : Button()
+    {
 
-        override fun getButtonItem(player: Player): ItemStack {
+        override fun getButtonItem(player: Player): ItemStack
+        {
             val lore = mutableListOf<String>()
             val ownsPrefix = chatTagPlayer.ownedTags.contains(chatTag.uniqueId)
 
-            if (ownsPrefix) {
-                lore.add("${CC.GRAY}You own this prefix and it");
-                lore.add("${CC.GRAY}can be enabled at any time.");
-            } else {
-                lore.add("${CC.GRAY}This prefix is currently");
-                lore.add("${CC.GRAY}locked as you don't own it.");
+            if (ownsPrefix)
+            {
+                lore.add("${CC.GRAY}You own this prefix and it")
+                lore.add("${CC.GRAY}can be enabled at any time.")
+            } else
+            {
+                lore.add("${CC.GRAY}This prefix is currently")
+                lore.add("${CC.GRAY}locked as you don't own it.")
             }
 
             lore.add("")
@@ -85,9 +95,11 @@ class ChatTagsMenu : PaginatedMenu() {
             lore.add(chatTag.value)
             lore.add("")
             lore.add(
-                if (ownsPrefix) {
+                if (ownsPrefix)
+                {
                     "${CC.GREEN}Click to equip this tag."
-                } else {
+                } else
+                {
                     "${CC.RED}You can't equip this tag."
                 }
             )
@@ -97,13 +109,19 @@ class ChatTagsMenu : PaginatedMenu() {
                 .setLore(lore).build()
         }
 
-        override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView) {
-            if (!chatTagPlayer.ownedTags.contains(chatTag.uniqueId)) {
-                player.sendMessage("${CC.RED}You don't own the ${CC.YELLOW}${chatTag.displayName}${CC.RED} tag.")
-                return
+        override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView)
+        {
+            if (!player.hasPermission("peach.all-chattags"))
+            {
+                if (!chatTagPlayer.ownedTags.contains(chatTag.uniqueId))
+                {
+                    player.sendMessage("${CC.RED}You don't own the ${CC.YELLOW}${chatTag.displayName}${CC.RED} tag.")
+                    return
+                }
             }
 
-            if (chatTagPlayer.currentChatTag != null && chatTagPlayer.currentChatTag == chatTag.uniqueId) {
+            if (chatTagPlayer.currentChatTag != null && chatTagPlayer.currentChatTag == chatTag.uniqueId)
+            {
                 player.sendMessage("${CC.RED}You already have the ${CC.YELLOW}${chatTag.displayName}${CC.RED} tag equipped.")
                 return
             }
