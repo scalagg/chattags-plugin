@@ -5,7 +5,6 @@ import gg.scala.lemon.handler.RedisHandler
 import gg.scala.peach.PeachSpigotPlugin
 import gg.scala.peach.handler.MongoHandler
 import net.evilblock.cubed.util.CC
-import net.kyori.adventure.text.minimessage.MiniMessage
 import java.util.*
 import java.util.concurrent.CompletableFuture
 
@@ -19,24 +18,31 @@ data class ChatTag(
     var value: String = CC.GRAY,
 ) : Savable
 {
-    val miniMessage = MiniMessage.get().parse(value)
 
-    override fun save(): CompletableFuture<Void> {
+    override fun save(): CompletableFuture<Void>
+    {
         return MongoHandler.chatTagLayer.saveEntry(
             uniqueId.toString(), this
         )
     }
 
-    fun saveAndPushUpdatesGlobally(): CompletableFuture<Void> {
+    fun saveAndPushUpdatesGlobally(): CompletableFuture<Void>
+    {
         return save().thenApply {
-            RedisHandler.buildMessage(
-                "chat-tag-update",
-                hashMapOf<String, String>().also {
-                    it["uniqueId"] = uniqueId.toString()
-                }
-            ).dispatch(
-                PeachSpigotPlugin.instance.banana
-            )
+            try
+            {
+                RedisHandler.buildMessage(
+                    "chat-tag-update",
+                    hashMapOf<String, String>().also {
+                        it["uniqueId"] = uniqueId.toString()
+                    }
+                ).dispatch(
+                    PeachSpigotPlugin.instance.banana
+                )
+            } catch (e: Exception)
+            {
+                e.printStackTrace()
+            }
 
             return@thenApply null
         }

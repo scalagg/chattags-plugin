@@ -152,7 +152,7 @@ class ChatTagsAdminCommand : BaseCommand() {
                 PeachSpigotPlugin.instance.banana
             )
 
-            sender.sendMessage("${CC.SEC}You've deleted the ${CC.WHITE}${chatTag.displayName}${CC.SEC} rank.")
+            sender.sendMessage("${CC.SEC}You've deleted the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat-tag.")
         }
     }
 
