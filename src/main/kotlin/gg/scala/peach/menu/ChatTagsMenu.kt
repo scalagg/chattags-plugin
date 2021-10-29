@@ -22,6 +22,22 @@ import org.bukkit.inventory.ItemStack
  */
 class ChatTagsMenu : PaginatedMenu()
 {
+    companion object {
+        val BUTTON_SLOTS = listOf(
+            10, 11, 12, 13, 14, 15, 16,
+            19, 20, 21, 22, 23, 24, 25,
+            28, 29, 30, 31, 32, 33, 34,
+            37, 38, 39, 40, 41, 42, 43,
+        )
+    }
+
+    init {
+        placeholdBorders = true
+    }
+
+    override fun size(buttons: Map<Int, Button>): Int = 54
+
+    override fun getAllPagesButtonSlots(): List<Int> = BUTTON_SLOTS
 
     override fun getPrePaginatedTitle(player: Player): String
     {
