@@ -35,14 +35,9 @@ class ChatTagsMenu : PaginatedMenu()
         placeholdBorders = true
     }
 
-    override fun size(buttons: Map<Int, Button>): Int = 54
-
+    override fun size(buttons: Map<Int, Button>): Int = 36
     override fun getAllPagesButtonSlots(): List<Int> = BUTTON_SLOTS
-
-    override fun getPrePaginatedTitle(player: Player): String
-    {
-        return "Chat Tags"
-    }
+    override fun getPrePaginatedTitle(player: Player): String = "Chat Tags"
 
     override fun getAllPagesButtons(player: Player): Map<Int, Button>
     {
@@ -96,32 +91,21 @@ class ChatTagsMenu : PaginatedMenu()
             val lore = mutableListOf<String>()
             val ownsPrefix = chatTagPlayer.ownedTags.contains(chatTag.uniqueId)
 
-            if (ownsPrefix)
-            {
-                lore.add("${CC.GRAY}You own this prefix and it")
-                lore.add("${CC.GRAY}can be enabled at any time.")
-            } else
-            {
-                lore.add("${CC.GRAY}This prefix is currently")
-                lore.add("${CC.GRAY}locked as you don't own it.")
-            }
-
-            lore.add("")
             lore.add("${CC.GRAY}Shows up in chat as:")
             lore.add(chatTag.value)
             lore.add("")
             lore.add(
                 if (!player.hasPermission("peach.all-chattags") || !ownsPrefix)
                 {
-                    "${CC.GREEN}Click to equip this tag."
+                    "${CC.YELLOW}Click to equip!"
                 } else
                 {
-                    "${CC.RED}You can't equip this tag."
+                    "${CC.RED}You don't own this tag."
                 }
             )
 
             return ItemBuilder(XMaterial.NAME_TAG)
-                .name("${CC.PRI}${chatTag.displayName}")
+                .name("${CC.GREEN}${chatTag.displayName}")
                 .setLore(lore).build()
         }
 
