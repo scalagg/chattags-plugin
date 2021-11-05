@@ -12,7 +12,7 @@ object ChatTagHandler {
 
     val chatTags = mutableMapOf<UUID, ChatTag>()
 
-    init {
+    fun initialLoad() {
         MongoHandler.chatTagLayer.fetchAllEntries().thenAccept { tags ->
             tags.forEach {
                 chatTags[it.value.uniqueId] = it.value

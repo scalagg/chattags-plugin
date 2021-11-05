@@ -47,6 +47,8 @@ class PeachSpigotPlugin : ExtendedScalaPlugin() {
         loadRedisHandler()
         loadListeners()
 
+        ChatTagHandler.initialLoad()
+
         ChatHandler.channels["default"] = ChatTagDefaultChannel
 
         KyoriBridge.initialLoad()
