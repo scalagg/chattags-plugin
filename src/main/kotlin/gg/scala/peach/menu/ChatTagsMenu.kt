@@ -26,14 +26,16 @@ class ChatTagsMenu : PaginatedMenu()
         val BUTTON_SLOTS = listOf(
             10, 11, 12, 13, 14, 15, 16,
             19, 20, 21, 22, 23, 24, 25,
+            28, 29, 30, 31, 32, 33, 34,
         )
     }
 
     init {
         placeholdBorders = true
+        updateAfterClick = true
     }
 
-    override fun size(buttons: Map<Int, Button>): Int = 36
+    override fun size(buttons: Map<Int, Button>): Int = 45
     override fun getAllPagesButtonSlots(): List<Int> = BUTTON_SLOTS
     override fun getPrePaginatedTitle(player: Player): String = "Chat Tags"
 
@@ -48,36 +50,6 @@ class ChatTagsMenu : PaginatedMenu()
         }
     }
 
-    override fun getGlobalButtons(player: Player): Map<Int, Button>
-    {
-        return hashMapOf<Int, Button>().also {
-            it[4] = ItemBuilder(Material.BED)
-                .name("${CC.RED}Reset Tag")
-                .addToLore(
-                    "${CC.GRAY}Resets your current",
-                    "${CC.GRAY}chat tag.",
-                    "",
-                    "${CC.YELLOW}Click to reset."
-                )
-                .toButton { clicker, _ ->
-                    if (clicker != null)
-                    {
-                        val chatTagPlayer = PeachSpigotPlugin.instance.players[player.uniqueId]!!
-
-                        if (chatTagPlayer.currentChatTag == null)
-                        {
-                            clicker.sendMessage("${CC.RED}You don't have a tag equipped.")
-                            return@toButton
-                        }
-
-                        chatTagPlayer.currentChatTag = null
-
-                        clicker.sendMessage("${CC.GREEN}You've reset your tag.")
-                    }
-                }
-        }
-    }
-
     class ChatTagButton(
         private val chatTag: ChatTag,
         private val chatTagPlayer: ChatTagPlayer
@@ -87,13 +59,18 @@ class ChatTagsMenu : PaginatedMenu()
         override fun getButtonItem(player: Player): ItemStack
         {
             val lore = mutableListOf<String>()
+
             val ownsPrefix = chatTagPlayer.ownedTags.contains(chatTag.uniqueId)
+            val equipped = chatTagPlayer.currentChatTag != null && chatTagPlayer.currentChatTag == chatTag.uniqueId
 
             lore.add("${CC.GRAY}Shows up in chat as:")
             lore.add(chatTag.value)
             lore.add("")
             lore.add(
-                if (!player.hasPermission("peach.all-chattags") || !ownsPrefix)
+                if (equipped)
+                {
+                    "${CC.GOLD}This tag is equipped."
+                } else if (!player.hasPermission("peach.all-chattags") || !ownsPrefix)
                 {
                     "${CC.YELLOW}Click to equip!"
                 } else
@@ -102,9 +79,16 @@ class ChatTagsMenu : PaginatedMenu()
                 }
             )
 
-            return ItemBuilder(XMaterial.NAME_TAG)
+            val itemBuilder = ItemBuilder(XMaterial.NAME_TAG)
                 .name("${CC.GREEN}${chatTag.displayName}")
-                .setLore(lore).build()
+                .setLore(lore)
+
+            if (equipped)
+            {
+                itemBuilder.glow()
+            }
+
+            return itemBuilder.build()
         }
 
         override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView)
@@ -120,7 +104,8 @@ class ChatTagsMenu : PaginatedMenu()
 
             if (chatTagPlayer.currentChatTag != null && chatTagPlayer.currentChatTag == chatTag.uniqueId)
             {
-                player.sendMessage("${CC.RED}You already have the ${CC.YELLOW}${chatTag.displayName}${CC.RED} tag equipped.")
+                player.sendMessage("${CC.RED}You've removed your tag.")
+                chatTagPlayer.currentChatTag = null
                 return
             }
 

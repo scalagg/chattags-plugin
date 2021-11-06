@@ -1,9 +1,9 @@
 plugins {
-    id 'org.jetbrains.kotlin.jvm' version '1.5.30'
+    id 'org.jetbrains.kotlin.jvm' version '1.5.31'
     id 'com.github.johnrengelman.shadow' version '6.1.0'
 }
 
-group 'com.solexgames'
+group 'gg.scala'
 version '1.0-SNAPSHOT'
 
 repositories {
@@ -15,9 +15,9 @@ repositories {
 }
 
 dependencies {
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.5.30'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.5.31'
 
-    implementation "net.kyori:adventure-api:4.9.2"
+    implementation 'net.kyori:adventure-api:4.9.3'
     implementation "net.kyori:adventure-platform-bukkit:4.0.0"
     implementation "net.kyori:adventure-text-minimessage:4.1.0-SNAPSHOT"
 

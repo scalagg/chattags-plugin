@@ -1,6 +1,5 @@
 package gg.scala.peach.handler
 
-import gg.scala.peach.PeachSpigotPlugin
 import gg.scala.peach.model.ChatTag
 import java.util.*
 
