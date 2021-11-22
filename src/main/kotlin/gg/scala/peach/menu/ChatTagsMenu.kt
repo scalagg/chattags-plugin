@@ -44,7 +44,7 @@ class ChatTagsMenu : PaginatedMenu()
     override fun getPrePaginatedTitle(player: Player): String = "Chat Tags"
 
     override fun getMaxItemsPerPage(player: Player): Int {
-        return 27
+        return 21
     }
 
     override fun getAllPagesButtons(player: Player): Map<Int, Button>
