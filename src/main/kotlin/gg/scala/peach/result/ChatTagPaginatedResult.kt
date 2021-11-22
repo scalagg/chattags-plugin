@@ -12,7 +12,7 @@ object ChatTagPaginatedResult : PaginatedResult<ChatTag>()
 {
     override fun getHeader(page: Int, maxPages: Int): String
     {
-        return "${CC.SEC}Chat Tags ${CC.GRAY}($page/$maxPages)${CC.SEC}:"
+        return "${CC.PRI}=== ${CC.SEC}Chat Tags ${CC.GRAY}($page/$maxPages)${CC.PRI} ==="
     }
 
     override fun format(result: ChatTag, resultIndex: Int): String

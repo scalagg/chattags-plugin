@@ -22,40 +22,47 @@ import org.bukkit.inventory.ItemStack
  */
 class ChatTagsMenu : PaginatedMenu()
 {
-    companion object {
-        val BUTTON_SLOTS = listOf(
+    companion object
+    {
+        @JvmStatic
+        val SLOTS = listOf(
             10, 11, 12, 13, 14, 15, 16,
             19, 20, 21, 22, 23, 24, 25,
-            28, 29, 30, 31, 32, 33, 34,
+            28, 29, 30, 31, 32, 33, 34
         )
     }
 
-    init {
+    init
+    {
         placeholdBorders = true
         updateAfterClick = true
     }
 
     override fun size(buttons: Map<Int, Button>): Int = 45
-    override fun getAllPagesButtonSlots(): List<Int> = BUTTON_SLOTS
+    override fun getAllPagesButtonSlots(): List<Int> = SLOTS
+
     override fun getPrePaginatedTitle(player: Player): String = "Chat Tags"
+
+    override fun getMaxItemsPerPage(player: Player): Int {
+        return 27
+    }
 
     override fun getAllPagesButtons(player: Player): Map<Int, Button>
     {
-        return hashMapOf<Int, Button>().also {
-            val chatTagPlayer = PeachSpigotPlugin.instance.players[player.uniqueId]!!
+        val chatTagPlayer = PeachSpigotPlugin.instance.players[player.uniqueId]!!
 
-            ChatTagHandler.chatTags.values.forEach { chatTag ->
-                it[it.size] = ChatTagButton(chatTag, chatTagPlayer)
+        return mutableMapOf<Int, Button>().also {
+            ChatTagHandler.chatTags.forEach { chatTag ->
+                it[it.size] = ChatTagButton(chatTag.value, chatTagPlayer)
             }
         }
     }
 
-    class ChatTagButton(
+    inner class ChatTagButton(
         private val chatTag: ChatTag,
         private val chatTagPlayer: ChatTagPlayer
     ) : Button()
     {
-
         override fun getButtonItem(player: Player): ItemStack
         {
             val lore = mutableListOf<String>()
@@ -79,7 +86,7 @@ class ChatTagsMenu : PaginatedMenu()
                 }
             )
 
-            val itemBuilder = ItemBuilder(XMaterial.NAME_TAG)
+            val itemBuilder = ItemBuilder(Material.NAME_TAG)
                 .name("${CC.GREEN}${chatTag.displayName}")
                 .setLore(lore)
 

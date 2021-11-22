@@ -23,7 +23,7 @@ object ChatTagDefaultChannel : DefaultChannel() {
         val bukkitPlayer = Bukkit.getPlayer(sender)
         val lemonPlayer = PlayerHandler.findPlayer(bukkitPlayer).orElse(null)
 
-        return "${rank.prefix}${lemonPlayer.getColoredName()}${rank.suffix}${getChatTag(bukkitPlayer) ?: ""}${CC.WHITE}: ${colorIfHasPermission(bukkitPlayer, message).replace(receiver.name, "${CC.YELLOW}${receiver.name}${CC.RESET}")}"
+        return "${rank.prefix}${lemonPlayer.getColoredName(rank)}${rank.suffix}${getChatTag(bukkitPlayer) ?: ""}${CC.WHITE}: ${colorIfHasPermission(bukkitPlayer, message).replace(receiver.name, "${CC.YELLOW}${receiver.name}${CC.RESET}")}"
     }
 
     override fun getPrefix(): String? {
