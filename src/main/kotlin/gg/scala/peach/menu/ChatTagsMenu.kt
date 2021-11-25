@@ -27,8 +27,7 @@ class ChatTagsMenu : PaginatedMenu()
         @JvmStatic
         val SLOTS = listOf(
             10, 11, 12, 13, 14, 15, 16,
-            19, 20, 21, 22, 23, 24, 25,
-            28, 29, 30, 31, 32, 33, 34
+            19, 20, 21, 22, 23, 24, 25
         )
     }
 
@@ -38,14 +37,10 @@ class ChatTagsMenu : PaginatedMenu()
         updateAfterClick = true
     }
 
-    override fun size(buttons: Map<Int, Button>): Int = 45
+    override fun size(buttons: Map<Int, Button>): Int = 36
     override fun getAllPagesButtonSlots(): List<Int> = SLOTS
 
     override fun getPrePaginatedTitle(player: Player): String = "Chat Tags"
-
-    override fun getMaxItemsPerPage(player: Player): Int {
-        return 21
-    }
 
     override fun getAllPagesButtons(player: Player): Map<Int, Button>
     {
