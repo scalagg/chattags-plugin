@@ -5,4 +5,4 @@ main: gg.scala.peach.PeachSpigotPlugin
 author: Scala
 website: https://scala.gg
 
-depend: [Cubed, Lemon]
+depend: [Cubed, Lemon, store-spigot]

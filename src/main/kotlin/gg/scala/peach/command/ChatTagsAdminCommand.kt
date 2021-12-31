@@ -77,7 +77,7 @@ class ChatTagsAdminCommand : BaseCommand()
     }
 
     @Subcommand("add")
-    @Syntax("<player> <chatTag>")
+    @Syntax("<player> <tag>")
     @CommandCompletion("@all-players @chattags")
     @Description("Give a player a chat-tag.")
     fun onAdd(sender: CommandSender, target: OnlinePlayer, chatTag: ChatTag)
@@ -101,7 +101,7 @@ class ChatTagsAdminCommand : BaseCommand()
     }
 
     @Subcommand("remove")
-    @Syntax("<player> <chatTag>")
+    @Syntax("<player> <tag>")
     @CommandCompletion("@all-players @chattags")
     @Description("Remove access to a chat-tag.")
     fun onRemove(sender: CommandSender, target: OnlinePlayer, chatTag: ChatTag)
@@ -151,7 +151,7 @@ class ChatTagsAdminCommand : BaseCommand()
         }
     }
 
-    @Syntax("<chatTag>")
+    @Syntax("<tag>")
     @Subcommand("delete")
     @CommandCompletion("@chattags")
     @Description("Delete an existing chat-tag.")
@@ -175,7 +175,7 @@ class ChatTagsAdminCommand : BaseCommand()
     }
 
     @Subcommand("meta design")
-    @Syntax("<chatTag> [design]")
+    @Syntax("<tag> [design]")
     @CommandCompletion("@chattags")
     @Description("Edit a chat-tags design.")
     @CommandPermission("peach.command.cta.meta.edit")
