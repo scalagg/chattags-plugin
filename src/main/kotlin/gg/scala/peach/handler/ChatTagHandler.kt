@@ -1,6 +1,9 @@
 package gg.scala.peach.handler
 
 import gg.scala.peach.model.ChatTag
+import gg.scala.store.controller.DataStoreObjectControllerCache
+import gg.scala.store.storage.type.DataStoreStorageType
+import net.evilblock.cubed.serializers.Serializers
 import java.util.*
 
 /**
@@ -9,14 +12,16 @@ import java.util.*
  */
 object ChatTagHandler {
 
-    val chatTags = mutableMapOf<UUID, ChatTag>()
+    var chatTags = mutableMapOf<UUID, ChatTag>()
 
     fun initialLoad() {
-        MongoHandler.chatTagLayer.fetchAllEntries().thenAccept { tags ->
-            tags.forEach {
-                chatTags[it.value.uniqueId] = it.value
+        val handle = DataStoreObjectControllerCache.create<ChatTag>()
+        handle.provideCustomSerializer(Serializers.gson)
+
+        handle.loadAll(DataStoreStorageType.MONGO)
+            .thenAccept {
+                chatTags = it.toMutableMap()
             }
-        }
     }
 
     fun findChatTag(name: String): ChatTag? {

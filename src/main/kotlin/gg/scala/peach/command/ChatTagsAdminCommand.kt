@@ -6,9 +6,10 @@ import gg.scala.peach.PeachSpigotPlugin
 import gg.scala.peach.adventure.KyoriBridge
 import gg.scala.peach.conversion.DeprecatedPrefixConverter
 import gg.scala.peach.handler.ChatTagHandler
-import gg.scala.peach.handler.MongoHandler
 import gg.scala.peach.model.ChatTag
 import gg.scala.peach.result.ChatTagPaginatedResult
+import gg.scala.store.controller.DataStoreObjectControllerCache
+import gg.scala.store.storage.type.DataStoreStorageType
 import net.evilblock.cubed.acf.BaseCommand
 import net.evilblock.cubed.acf.CommandHelp
 import net.evilblock.cubed.acf.ConditionFailedException
@@ -31,7 +32,7 @@ import java.util.*
  * @author GrowlyX
  * @since 9/11/2021
  */
-@CommandAlias("peach|chattagadmin|cta")
+@CommandAlias("peach|chattagadmin|cta|tag")
 @CommandPermission("peach.command.cta")
 class ChatTagsAdminCommand : BaseCommand()
 {
@@ -157,18 +158,20 @@ class ChatTagsAdminCommand : BaseCommand()
     @CommandPermission("peach.command.cta.management")
     fun onDelete(sender: CommandSender, chatTag: ChatTag)
     {
-        MongoHandler.chatTagLayer.deleteEntry(chatTag.uniqueId.toString()).thenAccept {
-            RedisHandler.buildMessage(
-                "chat-tag-delete",
-                hashMapOf<String, String>().also {
-                    it["uniqueId"] = chatTag.uniqueId.toString()
-                }
-            ).dispatch(
-                PeachSpigotPlugin.instance.banana
-            )
+        DataStoreObjectControllerCache.findNotNull<ChatTag>()
+            .delete(chatTag.identifier, DataStoreStorageType.MONGO)
+            .thenRun {
+                RedisHandler.buildMessage(
+                    "chat-tag-delete",
+                    hashMapOf<String, String>().also {
+                        it["uniqueId"] = chatTag.uniqueId.toString()
+                    }
+                ).dispatch(
+                    PeachSpigotPlugin.instance.banana
+                )
 
-            sender.sendMessage("${CC.SEC}You've deleted the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat-tag.")
-        }
+                sender.sendMessage("${CC.SEC}You've deleted the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat-tag.")
+            }
     }
 
     @Subcommand("meta design")

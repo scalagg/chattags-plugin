@@ -3,6 +3,9 @@ package gg.scala.peach.handler
 import gg.scala.banana.annotate.Subscribe
 import gg.scala.banana.message.Message
 import gg.scala.banana.subscribe.marker.BananaHandler
+import gg.scala.peach.model.ChatTag
+import gg.scala.store.controller.DataStoreObjectControllerCache
+import gg.scala.store.storage.type.DataStoreStorageType
 import java.util.*
 
 /**
@@ -22,10 +25,14 @@ object PeachRedisHandler : BananaHandler {
 
     @Subscribe("chat-tag-update")
     fun onChatTagUpdate(message: Message) {
-        val completableFuture =  MongoHandler.chatTagLayer
-            .fetchEntryByKey(message["uniqueId"])
+        val controller = DataStoreObjectControllerCache
+            .findNotNull<ChatTag>()
 
-        completableFuture.thenAccept {
+        controller.load(
+            UUID.fromString(message["uniqueId"]),
+            DataStoreStorageType.MONGO
+        ).thenAccept {
+            it ?: return@thenAccept
             ChatTagHandler.chatTags[it.uniqueId] = it
         }
     }
