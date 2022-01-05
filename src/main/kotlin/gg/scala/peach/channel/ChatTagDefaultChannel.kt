@@ -5,6 +5,7 @@ import gg.scala.lemon.player.channel.impl.DefaultChannel
 import gg.scala.lemon.player.rank.Rank
 import gg.scala.peach.PeachSpigotPlugin
 import gg.scala.peach.handler.ChatTagHandler
+import gg.scala.peach.service.PeachPlayerService
 import net.evilblock.cubed.util.CC
 import org.bukkit.Bukkit
 import org.bukkit.entity.Player
@@ -23,7 +24,7 @@ object ChatTagDefaultChannel : DefaultChannel() {
         val bukkitPlayer = Bukkit.getPlayer(sender)
         val lemonPlayer = PlayerHandler.findPlayer(bukkitPlayer).orElse(null)
 
-        return "${rank.prefix}${lemonPlayer.getColoredName(rank)}${rank.suffix}${getChatTag(bukkitPlayer) ?: ""}${CC.WHITE}: ${colorIfHasPermission(bukkitPlayer, message).replace(receiver.name, "${CC.YELLOW}${receiver.name}${CC.RESET}")}"
+        return "${rank.prefix}${lemonPlayer.getColoredName(rank)}${rank.suffix}${getChatTag(bukkitPlayer)}${CC.WHITE}: ${colorIfHasPermission(bukkitPlayer, message).replace(receiver.name, "${CC.YELLOW}${receiver.name}${CC.RESET}")}"
     }
 
     override fun getPrefix(): String? {
@@ -42,10 +43,12 @@ object ChatTagDefaultChannel : DefaultChannel() {
         return false
     }
 
-    override fun getChatTag(player: Player): String? {
-        val chatTagPlayer = PeachSpigotPlugin.instance.players[player.uniqueId]
+    override fun getChatTag(player: Player): String
+    {
+        val chatTagPlayer = PeachPlayerService
+            .players[player.uniqueId]!!
 
-        return chatTagPlayer?.let {
+        return chatTagPlayer.let {
             if (it.currentChatTag == null) {
                 ""
             } else {

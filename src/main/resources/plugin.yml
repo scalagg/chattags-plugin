@@ -1,5 +1,5 @@
 name: Peach
-version: 1.0.0
+version: 1.1.2
 main: gg.scala.peach.PeachSpigotPlugin
 
 author: Scala

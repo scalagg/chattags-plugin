@@ -2,12 +2,17 @@ package gg.scala.peach.command
 
 import gg.scala.lemon.handler.PlayerHandler
 import gg.scala.lemon.handler.RedisHandler
+import gg.scala.lemon.handler.RedisHandler.buildMessage
+import gg.scala.lemon.player.LemonPlayer
+import gg.scala.lemon.util.QuickAccess
+import gg.scala.lemon.util.QuickAccess.sendGlobalPlayerFancyMessage
 import gg.scala.peach.PeachSpigotPlugin
 import gg.scala.peach.adventure.KyoriBridge
 import gg.scala.peach.conversion.DeprecatedPrefixConverter
 import gg.scala.peach.handler.ChatTagHandler
 import gg.scala.peach.model.ChatTag
 import gg.scala.peach.result.ChatTagPaginatedResult
+import gg.scala.peach.service.PeachPlayerService
 import gg.scala.store.controller.DataStoreObjectControllerCache
 import gg.scala.store.storage.type.DataStoreStorageType
 import net.evilblock.cubed.acf.BaseCommand
@@ -18,49 +23,37 @@ import net.evilblock.cubed.acf.annotation.Optional
 import net.evilblock.cubed.acf.bukkit.contexts.OnlinePlayer
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Color
+import net.evilblock.cubed.util.bukkit.FancyMessage
+import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import java.io.BufferedReader
 import java.io.InputStreamReader
 import java.net.URL
 import java.util.*
-
+import java.util.concurrent.CompletableFuture
 
 /**
  * @author GrowlyX
  * @since 9/11/2021
  */
-@CommandAlias("peach|chattagadmin|cta|tag")
 @CommandPermission("peach.command.cta")
+@CommandAlias("peach|chattagadmin|cta|tag")
 class ChatTagsAdminCommand : BaseCommand()
 {
-
     @Default
     @HelpCommand
-    @Syntax("[help]")
     fun onHelp(help: CommandHelp)
     {
         help.showHelp()
     }
 
-    @Subcommand("parse")
-    fun onParse(player: Player, message: String)
-    {
-        val miniMessage = MiniMessage.get().parse(message)
-
-        val component = net.kyori.adventure.text.Component.text(
-            "Your parsed mini-message: ", TextColor.color(255, 255, 0)
-        )
-
-        KyoriBridge.adventure().player(player).sendMessage(
-            component.append(miniMessage)
-        )
-    }
-
     @Subcommand("list")
-    @Description("View all chat-tags.")
+    @Description("View all loaded chat-tags.")
     fun onList(sender: CommandSender, @Optional page: Int?)
     {
         val chatTagList = ChatTagHandler.chatTags
@@ -77,50 +70,79 @@ class ChatTagsAdminCommand : BaseCommand()
     }
 
     @Subcommand("add")
-    @Syntax("<player> <tag>")
     @CommandCompletion("@all-players @chattags")
     @Description("Give a player a chat-tag.")
-    fun onAdd(sender: CommandSender, target: OnlinePlayer, chatTag: ChatTag)
+    fun onAdd(sender: CommandSender, target: UUID, chatTag: ChatTag): CompletableFuture<Void>
     {
-        val chatTagPlayer = PeachSpigotPlugin.instance.players[target.player.uniqueId]
-            ?: throw ConditionFailedException("That player does not exist.")
+        return PeachPlayerService.controller
+            .load(target, DataStoreStorageType.MONGO)
+            .thenApply {
+                it ?: throw ConditionFailedException("This player has never logged on.")
 
-        if (chatTagPlayer.ownedTags.contains(chatTag.uniqueId))
-        {
-            throw ConditionFailedException("${CC.YELLOW}${target.player.name}${CC.RED} already owns the ${CC.YELLOW}${chatTag.displayName}${CC.RED} chat-tag.")
-        }
+                if (it.ownedTags.contains(chatTag.uniqueId))
+                {
+                    throw ConditionFailedException("${CC.YELLOW}${it.username}${CC.RED} already owns the ${CC.YELLOW}${chatTag.displayName}${CC.RED} chat-tag.")
+                }
 
-        chatTagPlayer.ownedTags.add(chatTag.uniqueId)
+                it.ownedTags.add(chatTag.uniqueId)
 
-        target.player.sendMessage("${CC.GREEN}You've been granted the ${CC.WHITE}${chatTag.displayName}${CC.GREEN} tag.")
-        target.player.sendMessage("${CC.GRAY}Equip your new tag using /tags.")
+                it.save().thenRun {
+                    buildMessage(
+                        "ctp-refresh",
+                        "uniqueId" to target.toString()
+                    ).dispatch(
+                        PeachSpigotPlugin.instance.banana
+                    )
+                }
 
-        PlayerHandler.findPlayer(target.player.uniqueId).orElse(null)?.save()
+                val fancyMessage = FancyMessage()
+                fancyMessage.withMessage(
+                    "${CC.GREEN}You've been granted the ${CC.WHITE}${chatTag.displayName}${CC.GREEN} chat-tag.",
+                    "${CC.GRAY}Equip your new tag by executing: /tags."
+                )
 
-        sender.sendMessage("${CC.SEC}You've granted ${CC.WHITE}${target.player.name}${CC.SEC} the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat-tag.")
+                sendGlobalPlayerFancyMessage(
+                    fancyMessage = fancyMessage, uuid = target
+                )
+
+                sender.sendMessage("${CC.SEC}You've granted ${CC.PRI}${it.username}${CC.SEC} the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat-tag.")
+
+                return@thenApply null
+            }
     }
 
     @Subcommand("remove")
-    @Syntax("<player> <tag>")
     @CommandCompletion("@all-players @chattags")
     @Description("Remove access to a chat-tag.")
-    fun onRemove(sender: CommandSender, target: OnlinePlayer, chatTag: ChatTag)
+    fun onRemove(sender: CommandSender, target: UUID, chatTag: ChatTag): CompletableFuture<Void>
     {
-        val chatTagPlayer = PeachSpigotPlugin.instance.players[target.player.uniqueId]
-            ?: throw ConditionFailedException("That player does not exist.")
+        return PeachPlayerService.controller
+            .load(target, DataStoreStorageType.MONGO)
+            .thenApply {
+                it ?: throw ConditionFailedException("This player has never logged on.")
 
-        if (!chatTagPlayer.ownedTags.contains(chatTag.uniqueId))
-        {
-            throw ConditionFailedException("${CC.YELLOW}${target.player.name}${CC.RED} does not own the ${CC.YELLOW}${chatTag.displayName}${CC.RED} chat-tag.")
-        }
+                if (it.ownedTags.contains(chatTag.uniqueId))
+                {
+                    throw ConditionFailedException("${CC.YELLOW}${it.username}${CC.RED} already owns the ${CC.YELLOW}${chatTag.displayName}${CC.RED} chat-tag.")
+                }
 
-        chatTagPlayer.ownedTags.remove(chatTag.uniqueId)
-        PlayerHandler.findPlayer(target.player.uniqueId).orElse(null)?.save()
+                it.ownedTags.remove(chatTag.uniqueId)
 
-        sender.sendMessage("${CC.SEC}You've removed ${CC.WHITE}${target.player.name}'s${CC.SEC} access to the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat-tag.")
+                it.save().thenRun {
+                    buildMessage(
+                        "ctp-refresh",
+                        "uniqueId" to target.toString()
+                    ).dispatch(
+                        PeachSpigotPlugin.instance.banana
+                    )
+                }
+
+                sender.sendMessage("${CC.SEC}You've removed ${CC.PRI}${it.username}'s${CC.SEC} access to the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat-tag.")
+
+                return@thenApply null
+            }
     }
 
-    @Syntax("<name>")
     @Subcommand("create")
     @Description("Create a new chat-tag.")
     @CommandPermission("peach.command.cta.management")
@@ -151,7 +173,6 @@ class ChatTagsAdminCommand : BaseCommand()
         }
     }
 
-    @Syntax("<tag>")
     @Subcommand("delete")
     @CommandCompletion("@chattags")
     @Description("Delete an existing chat-tag.")
@@ -161,7 +182,7 @@ class ChatTagsAdminCommand : BaseCommand()
         DataStoreObjectControllerCache.findNotNull<ChatTag>()
             .delete(chatTag.identifier, DataStoreStorageType.MONGO)
             .thenRun {
-                RedisHandler.buildMessage(
+                buildMessage(
                     "chat-tag-delete",
                     hashMapOf<String, String>().also {
                         it["uniqueId"] = chatTag.uniqueId.toString()
@@ -175,15 +196,23 @@ class ChatTagsAdminCommand : BaseCommand()
     }
 
     @Subcommand("meta design")
-    @Syntax("<tag> [design]")
     @CommandCompletion("@chattags")
     @Description("Edit a chat-tags design.")
     @CommandPermission("peach.command.cta.meta.edit")
     fun onMetaDesign(sender: CommandSender, chatTag: ChatTag, design: String)
     {
-        chatTag.value = Color.translate(design)
+        chatTag.value = LegacyComponentSerializer.legacyAmpersand()
+            .serialize(MiniMessage.get().parse(design))
 
-        chatTag.saveAndPushUpdatesGlobally().thenAccept {
+        chatTag.saveAndPushUpdatesGlobally().thenRun {
+            sender.sendMessage("${CC.RED} * Versions of Peach 1.1.3+ now parse chat-tag designs through MiniMessage.")
+            sender.sendMessage("${CC.RED} * ")
+            sender.sendMessage("${CC.RED} * Please refer to Kyori's website to view its documentation:")
+            sender.sendMessage("${CC.RED} * ${CC.BOLD}https://docs.adventure.kyori.net/minimessage#format")
+            sender.sendMessage("${CC.RED} * ")
+            sender.sendMessage("${CC.RED} * To view your own MiniMessage design live, use:")
+            sender.sendMessage("${CC.RED} * ${CC.BOLD}/peach tools parse <mini-message>")
+            sender.sendMessage("")
             sender.sendMessage("${CC.SEC}You've updated ${CC.WHITE}${chatTag.displayName}'s${CC.SEC} design to ${chatTag.value}${CC.SEC}.")
         }
     }
@@ -194,11 +223,10 @@ class ChatTagsAdminCommand : BaseCommand()
     {
         ChatTagHandler.chatTags.forEach {
             it.value.value = Color.translate(it.value.value)
-
             it.value.saveAndPushUpdatesGlobally()
         }
 
-        sender.sendMessage("${CC.GREEN}Finished!")
+        sender.sendMessage("${CC.GREEN}All chat tags have been colorized!")
     }
 
     @Subcommand("tools convert")
@@ -220,6 +248,21 @@ class ChatTagsAdminCommand : BaseCommand()
         bufferedReader.close()
 
         DeprecatedPrefixConverter.convert(content.toString(), sender)
+    }
+
+    @Subcommand("tools parse")
+    @Description("Preview a MiniMessage parsed message")
+    fun onParse(player: Player, message: String)
+    {
+        val miniMessage = MiniMessage.get().parse(message)
+
+        val component = Component.text(
+            "Your parsed mini-message: ", NamedTextColor.YELLOW
+        )
+
+        KyoriBridge.adventure().player(player).sendMessage(
+            component.append(miniMessage)
+        )
     }
 
 }

@@ -1,11 +1,11 @@
 package gg.scala.peach.menu
 
-import com.cryptomorin.xseries.XMaterial
 import gg.scala.lemon.handler.PlayerHandler
 import gg.scala.peach.PeachSpigotPlugin
 import gg.scala.peach.handler.ChatTagHandler
 import gg.scala.peach.model.ChatTag
 import gg.scala.peach.model.ChatTagPlayer
+import gg.scala.peach.service.PeachPlayerService
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.pagination.PaginatedMenu
 import net.evilblock.cubed.util.CC
@@ -44,7 +44,7 @@ class ChatTagsMenu : PaginatedMenu()
 
     override fun getAllPagesButtons(player: Player): Map<Int, Button>
     {
-        val chatTagPlayer = PeachSpigotPlugin.instance.players[player.uniqueId]!!
+        val chatTagPlayer = PeachPlayerService.players[player.uniqueId]!!
 
         return mutableMapOf<Int, Button>().also {
             ChatTagHandler.chatTags.forEach { chatTag ->
@@ -106,15 +106,13 @@ class ChatTagsMenu : PaginatedMenu()
 
             if (chatTagPlayer.currentChatTag != null && chatTagPlayer.currentChatTag == chatTag.uniqueId)
             {
-                player.sendMessage("${CC.RED}You've removed your tag.")
+                player.sendMessage("${CC.RED}You've reset your chat-tag.")
                 chatTagPlayer.currentChatTag = null
                 return
             }
 
             chatTagPlayer.currentChatTag = chatTag.uniqueId
-
-            PeachSpigotPlugin.instance.finalizePlayer(player)
-            PlayerHandler.findPlayer(player.uniqueId).orElse(null)?.save()
+            chatTagPlayer.save()
 
             player.sendMessage("${CC.SEC}You've equipped the ${CC.PRI}${chatTag.displayName} ${CC.GRAY}(${chatTag.value}${CC.GRAY})${CC.SEC} chat tag.")
         }

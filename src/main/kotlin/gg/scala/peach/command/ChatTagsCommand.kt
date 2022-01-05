@@ -9,10 +9,11 @@ import org.bukkit.entity.Player
  * @author GrowlyX
  * @since 9/11/2021
  */
-class ChatTagsCommand : BaseCommand() {
-
+class ChatTagsCommand : BaseCommand()
+{
     @CommandAlias("chattags|tags|prefixes")
-    fun onChatTags(player: Player) {
+    fun onChatTags(player: Player)
+    {
         ChatTagsMenu().openMenu(player)
     }
 }

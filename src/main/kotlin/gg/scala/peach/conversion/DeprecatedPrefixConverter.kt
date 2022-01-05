@@ -15,7 +15,6 @@ import java.util.*
  */
 object DeprecatedPrefixConverter
 {
-
     @JvmStatic
     val DEPRECATED_PREFIX_LIST_TYPE: Type = object : TypeToken<List<DeprecatedPrefix>>() {}.type
 

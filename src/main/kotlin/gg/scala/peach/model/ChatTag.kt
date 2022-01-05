@@ -32,20 +32,12 @@ data class ChatTag(
     fun saveAndPushUpdatesGlobally(): CompletableFuture<Void>
     {
         return save().thenApply {
-            try
-            {
-                RedisHandler.buildMessage(
-                    "chat-tag-update",
-                    hashMapOf<String, String>().also {
-                        it["uniqueId"] = uniqueId.toString()
-                    }
-                ).dispatch(
-                    PeachSpigotPlugin.instance.banana
-                )
-            } catch (e: Exception)
-            {
-                e.printStackTrace()
-            }
+            RedisHandler.buildMessage(
+                "chat-tag-update",
+                "uniqueId" to uniqueId.toString()
+            ).dispatch(
+                PeachSpigotPlugin.instance.banana
+            )
 
             return@thenApply null
         }

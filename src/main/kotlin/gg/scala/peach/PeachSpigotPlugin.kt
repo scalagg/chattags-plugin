@@ -4,103 +4,50 @@ import gg.scala.banana.Banana
 import gg.scala.banana.BananaBuilder
 import gg.scala.banana.options.BananaOptions
 import gg.scala.commons.ExtendedScalaPlugin
+import gg.scala.flavor.Flavor
+import gg.scala.flavor.FlavorOptions
 import gg.scala.lemon.Lemon
-import gg.scala.lemon.handler.ChatHandler
-import gg.scala.lemon.handler.PlayerHandler
-import gg.scala.lemon.player.metadata.Metadata
-import gg.scala.peach.adventure.KyoriBridge
-import gg.scala.peach.channel.ChatTagDefaultChannel
 import gg.scala.peach.handler.ChatTagHandler
 import gg.scala.peach.handler.PeachRedisHandler
 import gg.scala.peach.model.ChatTag
-import gg.scala.peach.model.ChatTagPlayer
-import me.lucko.helper.Events
 import net.evilblock.cubed.acf.ConditionFailedException
 import net.evilblock.cubed.command.manager.CubedCommandManager
 import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.util.CC
 import org.bukkit.ChatColor
-import org.bukkit.entity.Player
-import org.bukkit.event.player.PlayerJoinEvent
-import org.bukkit.event.player.PlayerQuitEvent
-import java.util.*
 
 /**
  * @author GrowlyX
  * @since 9/11/2021
  */
-class PeachSpigotPlugin : ExtendedScalaPlugin() {
-
-    companion object {
+class PeachSpigotPlugin : ExtendedScalaPlugin()
+{
+    companion object
+    {
         @JvmStatic
         lateinit var instance: PeachSpigotPlugin
     }
 
-    val players = mutableMapOf<UUID, ChatTagPlayer>()
+    private val flavor by lazy {
+        Flavor.create<PeachSpigotPlugin>(
+            options = FlavorOptions(logger)
+        )
+    }
 
     lateinit var banana: Banana
 
-    override fun enable() {
+    override fun enable()
+    {
         instance = this
 
         loadCommands()
         loadRedisHandler()
-        loadListeners()
 
-        ChatTagHandler.initialLoad()
-
-        ChatHandler.channels["default"] = ChatTagDefaultChannel
-
-        KyoriBridge.initialLoad()
+        flavor.startup()
     }
 
-    private fun loadListeners() {
-        Events.subscribe(PlayerJoinEvent::class.java).handler {
-            val lemonPlayer = PlayerHandler.findPlayer(it.player.uniqueId).orElse(null)
-
-            if (lemonPlayer != null) {
-                val chatTagPlayerData = lemonPlayer.getMetadata("chat-tag-player")
-
-                if (chatTagPlayerData != null) {
-                    val chatTagPlayer = Serializers.gson.fromJson(
-                        chatTagPlayerData.asString(), ChatTagPlayer::class.java
-                    )
-
-                    if (chatTagPlayer != null) {
-                        players[it.player.uniqueId] = chatTagPlayer
-                    } else {
-                        val newChatTagPlayer = ChatTagPlayer()
-
-                        players[it.player.uniqueId] = newChatTagPlayer
-                    }
-                } else {
-                    val chatTagPlayer = ChatTagPlayer()
-
-                    players[it.player.uniqueId] = chatTagPlayer
-                }
-            }
-        }
-
-        Events.subscribe(PlayerQuitEvent::class.java).handler {
-            finalizePlayer(it.player)
-        }
-    }
-
-    fun finalizePlayer(player: Player)
+    private fun loadRedisHandler()
     {
-        val lemonPlayer = PlayerHandler.findPlayer(player.uniqueId).orElse(null)
-
-        if (lemonPlayer != null) {
-            val serialized = Serializers.gson.toJson(players[player.uniqueId])
-
-            lemonPlayer.updateOrAddMetadata(
-                "chat-tag-player",
-                Metadata(serialized)
-            )
-        }
-    }
-
-    private fun loadRedisHandler() {
         banana = BananaBuilder()
             .options(
                 BananaOptions(
@@ -118,7 +65,8 @@ class PeachSpigotPlugin : ExtendedScalaPlugin() {
         banana.subscribe()
     }
 
-    private fun loadCommands() {
+    private fun loadCommands()
+    {
         val commandManager = CubedCommandManager(
             plugin = this,
             primary = ChatColor.valueOf(Lemon.instance.lemonWebData.primary),
@@ -141,6 +89,6 @@ class PeachSpigotPlugin : ExtendedScalaPlugin() {
 
     override fun disable()
     {
-        KyoriBridge.finalSave()
+        flavor.close()
     }
 }
