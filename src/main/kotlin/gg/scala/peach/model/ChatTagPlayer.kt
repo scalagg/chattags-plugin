@@ -20,9 +20,6 @@ data class ChatTagPlayer(
     override val identifier: UUID
         get() = uniqueId
 
-    val username: String
-        get() = CubedCacheUtil.fetchName(identifier)!!
-
     var currentChatTag: UUID? = null
     val ownedTags = mutableListOf<UUID>()
 

@@ -10,6 +10,8 @@ import gg.scala.lemon.Lemon
 import gg.scala.peach.handler.ChatTagHandler
 import gg.scala.peach.handler.PeachRedisHandler
 import gg.scala.peach.model.ChatTag
+import me.lucko.helper.plugin.ap.Plugin
+import me.lucko.helper.plugin.ap.PluginDependency
 import net.evilblock.cubed.acf.ConditionFailedException
 import net.evilblock.cubed.command.manager.CubedCommandManager
 import net.evilblock.cubed.serializers.Serializers
@@ -20,6 +22,15 @@ import org.bukkit.ChatColor
  * @author GrowlyX
  * @since 9/11/2021
  */
+@Plugin(
+    name = "Peach",
+    depends = [
+        PluginDependency("Cubed"),
+        PluginDependency("helper"),
+        PluginDependency("Lemon"),
+        PluginDependency("store-spigot")
+    ]
+)
 class PeachSpigotPlugin : ExtendedScalaPlugin()
 {
     companion object

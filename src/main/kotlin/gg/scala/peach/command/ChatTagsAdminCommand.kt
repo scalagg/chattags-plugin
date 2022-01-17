@@ -4,6 +4,7 @@ import gg.scala.lemon.handler.PlayerHandler
 import gg.scala.lemon.handler.RedisHandler
 import gg.scala.lemon.handler.RedisHandler.buildMessage
 import gg.scala.lemon.player.LemonPlayer
+import gg.scala.lemon.util.CubedCacheUtil
 import gg.scala.lemon.util.QuickAccess
 import gg.scala.lemon.util.QuickAccess.sendGlobalPlayerFancyMessage
 import gg.scala.peach.PeachSpigotPlugin
@@ -81,7 +82,7 @@ class ChatTagsAdminCommand : BaseCommand()
 
                 if (it.ownedTags.contains(chatTag.uniqueId))
                 {
-                    throw ConditionFailedException("${CC.YELLOW}${it.username}${CC.RED} already owns the ${CC.YELLOW}${chatTag.displayName}${CC.RED} chat-tag.")
+                    throw ConditionFailedException("${CC.YELLOW}${CubedCacheUtil.fetchName(target)}${CC.RED} already owns the ${CC.YELLOW}${chatTag.displayName}${CC.RED} chat-tag.")
                 }
 
                 it.ownedTags.add(chatTag.uniqueId)
@@ -105,7 +106,7 @@ class ChatTagsAdminCommand : BaseCommand()
                     fancyMessage = fancyMessage, uuid = target
                 )
 
-                sender.sendMessage("${CC.SEC}You've granted ${CC.PRI}${it.username}${CC.SEC} the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat-tag.")
+                sender.sendMessage("${CC.SEC}You've granted ${CC.PRI}${CubedCacheUtil.fetchName(target)}${CC.SEC} the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat-tag.")
 
                 return@thenApply null
             }
@@ -121,9 +122,9 @@ class ChatTagsAdminCommand : BaseCommand()
             .thenApply {
                 it ?: throw ConditionFailedException("This player has never logged on.")
 
-                if (it.ownedTags.contains(chatTag.uniqueId))
+                if (!it.ownedTags.contains(chatTag.uniqueId))
                 {
-                    throw ConditionFailedException("${CC.YELLOW}${it.username}${CC.RED} already owns the ${CC.YELLOW}${chatTag.displayName}${CC.RED} chat-tag.")
+                    throw ConditionFailedException("${CC.YELLOW}${CubedCacheUtil.fetchName(target)}${CC.RED} does not own the ${CC.YELLOW}${chatTag.displayName}${CC.RED} chat-tag.")
                 }
 
                 it.ownedTags.remove(chatTag.uniqueId)
@@ -137,7 +138,7 @@ class ChatTagsAdminCommand : BaseCommand()
                     )
                 }
 
-                sender.sendMessage("${CC.SEC}You've removed ${CC.PRI}${it.username}'s${CC.SEC} access to the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat-tag.")
+                sender.sendMessage("${CC.SEC}You've removed ${CC.PRI}${CubedCacheUtil.fetchName(target)}'s${CC.SEC} access to the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat-tag.")
 
                 return@thenApply null
             }
@@ -201,17 +202,17 @@ class ChatTagsAdminCommand : BaseCommand()
     @CommandPermission("peach.command.cta.meta.edit")
     fun onMetaDesign(sender: CommandSender, chatTag: ChatTag, design: String)
     {
-        chatTag.value = LegacyComponentSerializer.legacyAmpersand()
+        chatTag.value = LegacyComponentSerializer.legacySection()
             .serialize(MiniMessage.get().parse(design))
 
         chatTag.saveAndPushUpdatesGlobally().thenRun {
-            sender.sendMessage("${CC.RED} * Versions of Peach 1.1.3+ now parse chat-tag designs through MiniMessage.")
-            sender.sendMessage("${CC.RED} * ")
-            sender.sendMessage("${CC.RED} * Please refer to Kyori's website to view its documentation:")
-            sender.sendMessage("${CC.RED} * ${CC.BOLD}https://docs.adventure.kyori.net/minimessage#format")
-            sender.sendMessage("${CC.RED} * ")
-            sender.sendMessage("${CC.RED} * To view your own MiniMessage design live, use:")
-            sender.sendMessage("${CC.RED} * ${CC.BOLD}/peach tools parse <mini-message>")
+            sender.sendMessage("${CC.RED} Versions of Peach 1.1.3+ now parse chat-tag designs through MiniMessage.")
+            sender.sendMessage("")
+            sender.sendMessage("${CC.RED} Please refer to Kyori's website to view its documentation:")
+            sender.sendMessage("${CC.RED} ${CC.BOLD}https://docs.adventure.kyori.net/minimessage#format")
+            sender.sendMessage("")
+            sender.sendMessage("${CC.RED} To view your own MiniMessage design live, use:")
+            sender.sendMessage("${CC.RED} ${CC.BOLD}/peach tools parse <mini-message>")
             sender.sendMessage("")
             sender.sendMessage("${CC.SEC}You've updated ${CC.WHITE}${chatTag.displayName}'s${CC.SEC} design to ${chatTag.value}${CC.SEC}.")
         }

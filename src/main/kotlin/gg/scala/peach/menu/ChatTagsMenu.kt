@@ -66,7 +66,7 @@ class ChatTagsMenu : PaginatedMenu()
             val equipped = chatTagPlayer.currentChatTag != null && chatTagPlayer.currentChatTag == chatTag.uniqueId
 
             lore.add("${CC.GRAY}Shows up in chat as:")
-            lore.add(chatTag.value)
+            lore.add("${CC.WHITE}${chatTag.value}")
             lore.add("")
             lore.add(
                 if (equipped)
