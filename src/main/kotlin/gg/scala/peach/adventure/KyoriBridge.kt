@@ -1,9 +1,9 @@
 package gg.scala.peach.adventure
 
-import gg.scala.cookie.Cookie
 import gg.scala.flavor.service.Close
 import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
+import gg.scala.peach.PeachSpigotPlugin
 import net.kyori.adventure.platform.bukkit.BukkitAudiences
 
 /**
@@ -21,7 +21,7 @@ object KyoriBridge
     fun configure()
     {
         adventure = BukkitAudiences.create(
-            Cookie.instance
+            PeachSpigotPlugin.instance
         )
     }
 
