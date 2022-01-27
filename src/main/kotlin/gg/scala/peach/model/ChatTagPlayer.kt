@@ -13,7 +13,6 @@ import java.util.concurrent.CompletableFuture
  * @since 9/11/2021
  */
 data class ChatTagPlayer(
-    @Transient
     private val uniqueId: UUID
 ) : IDataStoreObject, Savable
 {
