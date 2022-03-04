@@ -5,6 +5,7 @@ import gg.scala.flavor.service.Service
 import gg.scala.peach.model.ChatTagPlayer
 import gg.scala.store.controller.DataStoreObjectController
 import gg.scala.store.controller.DataStoreObjectControllerCache
+import gg.scala.store.storage.impl.CachedDataStoreStorageLayer
 import gg.scala.store.storage.type.DataStoreStorageType
 import me.lucko.helper.Events
 import net.evilblock.cubed.serializers.Serializers
@@ -23,14 +24,17 @@ object PeachPlayerService
 {
     var controller by Delegates.notNull<DataStoreObjectController<ChatTagPlayer>>()
 
-    val players: ConcurrentHashMap<UUID, ChatTagPlayer>
-        get() = controller.localCache
+    private val players: ConcurrentHashMap<UUID, ChatTagPlayer>
+        get() = controller.useLayerWithReturn<CachedDataStoreStorageLayer<ChatTagPlayer>, ConcurrentHashMap<UUID, ChatTagPlayer>>(
+            DataStoreStorageType.CACHE
+        ) {
+            this.connection.getConnection()
+        }
 
     @Configure
     fun configure()
     {
-        controller = DataStoreObjectControllerCache
-            .create(Serializers.gson)
+        controller = DataStoreObjectControllerCache.create()
 
         Events.subscribe(AsyncPlayerPreLoginEvent::class.java)
             .handler {
@@ -45,7 +49,7 @@ object PeachPlayerService
 
         Events.subscribe(PlayerQuitEvent::class.java)
             .handler {
-                controller.remove(it.player.uniqueId)?.save()
+                players.remove(it.player.uniqueId)?.save()
             }
     }
 }

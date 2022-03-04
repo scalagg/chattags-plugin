@@ -23,7 +23,6 @@ object ChatTagHandler
     fun configure()
     {
         val handle = DataStoreObjectControllerCache.create<ChatTag>()
-        handle.provideCustomSerializer(Serializers.gson)
 
         handle.loadAll(DataStoreStorageType.MONGO)
             .thenAccept {
