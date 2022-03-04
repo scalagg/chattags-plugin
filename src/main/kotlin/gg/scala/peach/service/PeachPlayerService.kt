@@ -24,7 +24,7 @@ object PeachPlayerService
 {
     var controller by Delegates.notNull<DataStoreObjectController<ChatTagPlayer>>()
 
-    private val players: ConcurrentHashMap<UUID, ChatTagPlayer>
+    val players: ConcurrentHashMap<UUID, ChatTagPlayer>
         get() = controller.useLayerWithReturn<CachedDataStoreStorageLayer<ChatTagPlayer>, ConcurrentHashMap<UUID, ChatTagPlayer>>(
             DataStoreStorageType.CACHE
         ) {

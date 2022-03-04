@@ -1,11 +1,7 @@
 package gg.scala.peach.command
 
-import gg.scala.lemon.handler.PlayerHandler
-import gg.scala.lemon.handler.RedisHandler
 import gg.scala.lemon.handler.RedisHandler.buildMessage
-import gg.scala.lemon.player.LemonPlayer
 import gg.scala.lemon.util.CubedCacheUtil
-import gg.scala.lemon.util.QuickAccess
 import gg.scala.lemon.util.QuickAccess.sendGlobalPlayerFancyMessage
 import gg.scala.peach.PeachSpigotPlugin
 import gg.scala.peach.adventure.KyoriBridge
@@ -21,13 +17,11 @@ import net.evilblock.cubed.acf.CommandHelp
 import net.evilblock.cubed.acf.ConditionFailedException
 import net.evilblock.cubed.acf.annotation.*
 import net.evilblock.cubed.acf.annotation.Optional
-import net.evilblock.cubed.acf.bukkit.contexts.OnlinePlayer
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Color
 import net.evilblock.cubed.util.bukkit.FancyMessage
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
-import net.kyori.adventure.text.format.TextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.command.CommandSender
@@ -203,7 +197,7 @@ class ChatTagsAdminCommand : BaseCommand()
     fun onMetaDesign(sender: CommandSender, chatTag: ChatTag, design: String)
     {
         chatTag.value = LegacyComponentSerializer.legacySection()
-            .serialize(MiniMessage.get().parse(design))
+            .serialize(MiniMessage.miniMessage().deserialize(design))
 
         chatTag.saveAndPushUpdatesGlobally().thenRun {
             sender.sendMessage("${CC.RED} Versions of Peach 1.1.3+ now parse chat-tag designs through MiniMessage.")
@@ -255,7 +249,8 @@ class ChatTagsAdminCommand : BaseCommand()
     @Description("Preview a MiniMessage parsed message")
     fun onParse(player: Player, message: String)
     {
-        val miniMessage = MiniMessage.get().parse(message)
+        val miniMessage = MiniMessage.miniMessage()
+            .deserialize(message)
 
         val component = Component.text(
             "Your parsed mini-message: ", NamedTextColor.YELLOW
