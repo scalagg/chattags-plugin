@@ -1,5 +1,7 @@
 package gg.scala.peach.model
 
+import gg.scala.aware.message.AwareMessage
+import gg.scala.aware.thread.AwareThreadContext
 import gg.scala.common.Savable
 import gg.scala.lemon.handler.RedisHandler
 import gg.scala.peach.PeachSpigotPlugin
@@ -32,11 +34,12 @@ data class ChatTag(
     fun saveAndPushUpdatesGlobally(): CompletableFuture<Void>
     {
         return save().thenApply {
-            RedisHandler.buildMessage(
+            AwareMessage.of(
                 "chat-tag-update",
-                "uniqueId" to uniqueId.toString()
-            ).dispatch(
-                PeachSpigotPlugin.instance.banana
+                PeachSpigotPlugin.instance.aware,
+                "uniqueId" to uniqueId
+            ).publish(
+                AwareThreadContext.SYNC
             )
 
             return@thenApply null
