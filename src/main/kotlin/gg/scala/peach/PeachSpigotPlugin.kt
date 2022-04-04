@@ -1,8 +1,8 @@
 package gg.scala.peach
 
-import gg.scala.banana.Banana
-import gg.scala.banana.BananaBuilder
-import gg.scala.banana.options.BananaOptions
+import gg.scala.aware.AwareBuilder
+import gg.scala.aware.codec.codecs.interpretation.AwareMessageCodec
+import gg.scala.aware.message.AwareMessage
 import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.flavor.Flavor
 import gg.scala.flavor.FlavorOptions
@@ -14,7 +14,6 @@ import me.lucko.helper.plugin.ap.Plugin
 import me.lucko.helper.plugin.ap.PluginDependency
 import net.evilblock.cubed.acf.ConditionFailedException
 import net.evilblock.cubed.command.manager.CubedCommandManager
-import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.util.CC
 import org.bukkit.ChatColor
 
@@ -45,7 +44,13 @@ class PeachSpigotPlugin : ExtendedScalaPlugin()
         )
     }
 
-    lateinit var banana: Banana
+    val aware by lazy {
+        AwareBuilder
+            .of<AwareMessage>("peach")
+            .codec(AwareMessageCodec)
+            .logger(logger)
+            .build()
+    }
 
     override fun enable()
     {
@@ -59,21 +64,8 @@ class PeachSpigotPlugin : ExtendedScalaPlugin()
 
     private fun loadRedisHandler()
     {
-        banana = BananaBuilder()
-            .options(
-                BananaOptions(
-                    channel = "peach",
-                    async = true,
-                    gson = Serializers.gson
-                )
-            )
-            .credentials(
-                Lemon.instance.credentials
-            )
-            .build()
-
-        banana.registerClass(PeachRedisHandler)
-        banana.subscribe()
+        aware.listen(PeachRedisHandler)
+        aware.connect()
     }
 
     private fun loadCommands()
@@ -101,5 +93,6 @@ class PeachSpigotPlugin : ExtendedScalaPlugin()
     override fun disable()
     {
         flavor.close()
+        aware.shutdown()
     }
 }

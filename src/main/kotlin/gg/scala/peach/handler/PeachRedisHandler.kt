@@ -1,8 +1,7 @@
 package gg.scala.peach.handler
 
-import gg.scala.banana.annotate.Subscribe
-import gg.scala.banana.message.Message
-import gg.scala.banana.subscribe.marker.BananaHandler
+import gg.scala.aware.annotation.Subscribe
+import gg.scala.aware.message.AwareMessage
 import gg.scala.peach.model.ChatTag
 import gg.scala.peach.model.ChatTagPlayer
 import gg.scala.peach.service.PeachPlayerService
@@ -15,44 +14,43 @@ import java.util.*
  * @author GrowlyX
  * @since 9/11/2021
  */
-object PeachRedisHandler : BananaHandler
+object PeachRedisHandler
 {
     @Subscribe("ctp-refresh")
-    fun onCtpRefresh(message: Message)
+    fun onCtpRefresh(message: AwareMessage)
     {
-        message["uniqueId"]?.let {
-            val uniqueId = UUID.fromString(it)
+        val uniqueId = message
+            .retrieve<UUID>("uniqueId")
 
-            Bukkit.getPlayer(uniqueId)?.let {
-                PeachPlayerService.controller.loadAndCache(
-                    uniqueId,
-                    {
-                        ChatTagPlayer(uniqueId)
-                    },
-                    DataStoreStorageType.MONGO
-                )
-            }
+        Bukkit.getPlayer(uniqueId)?.let {
+            PeachPlayerService.controller.loadAndCache(
+                uniqueId,
+                {
+                    ChatTagPlayer(uniqueId)
+                },
+                DataStoreStorageType.MONGO
+            )
         }
     }
 
     @Subscribe("chat-tag-delete")
-    fun onChatTagDelete(message: Message)
+    fun onChatTagDelete(message: AwareMessage)
     {
-        val rankUuid = UUID.fromString(
-            message["uniqueId"]
-        )
+        val rankUuid = message
+            .retrieve<UUID>("uniqueId")
 
-        ChatTagHandler.chatTags.remove(rankUuid)
+        ChatTagHandler.chatTags
+            .remove(rankUuid)
     }
 
     @Subscribe("chat-tag-update")
-    fun onChatTagUpdate(message: Message)
+    fun onChatTagUpdate(message: AwareMessage)
     {
         val controller = DataStoreObjectControllerCache
             .findNotNull<ChatTag>()
 
         controller.load(
-            UUID.fromString(message["uniqueId"]),
+            message.retrieve("uniqueId"),
             DataStoreStorageType.MONGO
         ).thenAccept {
             it ?: return@thenAccept

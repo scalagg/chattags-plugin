@@ -1,5 +1,7 @@
 package gg.scala.peach.command
 
+import gg.scala.aware.message.AwareMessage
+import gg.scala.aware.thread.AwareThreadContext
 import gg.scala.lemon.handler.RedisHandler.buildMessage
 import gg.scala.lemon.util.CubedCacheUtil
 import gg.scala.lemon.util.QuickAccess.sendGlobalPlayerFancyMessage
@@ -82,11 +84,12 @@ class ChatTagsAdminCommand : BaseCommand()
                 it.ownedTags.add(chatTag.uniqueId)
 
                 it.save().thenRun {
-                    buildMessage(
+                    AwareMessage.of(
                         "ctp-refresh",
-                        "uniqueId" to target.toString()
-                    ).dispatch(
-                        PeachSpigotPlugin.instance.banana
+                        PeachSpigotPlugin.instance.aware,
+                        "uniqueId" to chatTag.uniqueId
+                    ).publish(
+                        AwareThreadContext.SYNC
                     )
                 }
 
@@ -124,11 +127,12 @@ class ChatTagsAdminCommand : BaseCommand()
                 it.ownedTags.remove(chatTag.uniqueId)
 
                 it.save().thenRun {
-                    buildMessage(
+                    AwareMessage.of(
                         "ctp-refresh",
-                        "uniqueId" to target.toString()
-                    ).dispatch(
-                        PeachSpigotPlugin.instance.banana
+                        PeachSpigotPlugin.instance.aware,
+                        "uniqueId" to chatTag.uniqueId
+                    ).publish(
+                        AwareThreadContext.SYNC
                     )
                 }
 
@@ -177,13 +181,12 @@ class ChatTagsAdminCommand : BaseCommand()
         DataStoreObjectControllerCache.findNotNull<ChatTag>()
             .delete(chatTag.identifier, DataStoreStorageType.MONGO)
             .thenRun {
-                buildMessage(
+                AwareMessage.of(
                     "chat-tag-delete",
-                    hashMapOf<String, String>().also {
-                        it["uniqueId"] = chatTag.uniqueId.toString()
-                    }
-                ).dispatch(
-                    PeachSpigotPlugin.instance.banana
+                    PeachSpigotPlugin.instance.aware,
+                    "uniqueId" to chatTag.uniqueId
+                ).publish(
+                    AwareThreadContext.SYNC
                 )
 
                 sender.sendMessage("${CC.SEC}You've deleted the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat-tag.")
