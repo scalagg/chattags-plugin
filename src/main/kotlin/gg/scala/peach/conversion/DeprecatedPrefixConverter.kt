@@ -16,13 +16,15 @@ import java.util.*
 object DeprecatedPrefixConverter
 {
     @JvmStatic
-    val DEPRECATED_PREFIX_LIST_TYPE: Type = object : TypeToken<List<DeprecatedPrefix>>() {}.type
+    val DEPRECATED_PREFIX_LIST_TYPE: Type = object : TypeToken<List<DeprecatedPrefix>>()
+    {}.type
 
     fun convert(json: String, sender: CommandSender)
     {
-        val deprecated = Serializers.gson.fromJson<List<DeprecatedPrefix>>(
-            json, DEPRECATED_PREFIX_LIST_TYPE
-        )
+        val deprecated = Serializers.gson
+            .fromJson<List<DeprecatedPrefix>>(
+                json, DEPRECATED_PREFIX_LIST_TYPE
+            )
 
         deprecated.forEach {
             val existing = ChatTagHandler.findChatTag(it.name)

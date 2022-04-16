@@ -12,12 +12,10 @@ import java.util.concurrent.CompletableFuture
  * @since 9/11/2021
  */
 data class ChatTagPlayer(
-    private val uniqueId: UUID
+    private val uniqueId: UUID,
+    override val identifier: UUID = uniqueId
 ) : IDataStoreObject, Savable
 {
-    override val identifier: UUID
-        get() = uniqueId
-
     var currentChatTag: UUID? = null
     val ownedTags = mutableListOf<UUID>()
 

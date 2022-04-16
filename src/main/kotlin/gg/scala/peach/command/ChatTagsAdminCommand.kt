@@ -2,6 +2,8 @@ package gg.scala.peach.command
 
 import gg.scala.aware.message.AwareMessage
 import gg.scala.aware.thread.AwareThreadContext
+import gg.scala.commons.annotations.commands.AutoRegister
+import gg.scala.commons.command.ScalaCommand
 import gg.scala.lemon.handler.RedisHandler.buildMessage
 import gg.scala.lemon.util.CubedCacheUtil
 import gg.scala.lemon.util.QuickAccess.sendGlobalPlayerFancyMessage
@@ -38,9 +40,10 @@ import java.util.concurrent.CompletableFuture
  * @author GrowlyX
  * @since 9/11/2021
  */
+@AutoRegister
 @CommandPermission("peach.command.cta")
 @CommandAlias("peach|chattagadmin|cta|tag")
-class ChatTagsAdminCommand : BaseCommand()
+class ChatTagsAdminCommand : ScalaCommand()
 {
     @Default
     @HelpCommand

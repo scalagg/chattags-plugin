@@ -44,7 +44,7 @@ class ChatTagsMenu : PaginatedMenu()
 
     override fun getAllPagesButtons(player: Player): Map<Int, Button>
     {
-        val chatTagPlayer = PeachPlayerService.players[player.uniqueId]!!
+        val chatTagPlayer = PeachPlayerService.find(player)!!
 
         return mutableMapOf<Int, Button>().also {
             ChatTagHandler.chatTags.forEach { chatTag ->

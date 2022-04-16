@@ -29,12 +29,13 @@ object ChatTagHandler
             .thenAccept {
                 chatTags = it.toMutableMap()
             }
+            .join()
 
         val blank = Component.text("")
 
         DefaultChatChannel.provideChatTag { player ->
             val chatTagPlayer = PeachPlayerService
-                .players[player.uniqueId]
+                .find(player)
                 ?: return@provideChatTag blank
 
             if (
