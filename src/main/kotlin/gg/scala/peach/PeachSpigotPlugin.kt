@@ -17,6 +17,7 @@ import kotlin.properties.Delegates
  */
 @Plugin(
     name = "Peach",
+    apiVersion = "1.18",
     depends = [
         PluginDependency("Cubed"),
         PluginDependency("helper"),
