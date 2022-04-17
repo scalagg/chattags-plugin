@@ -12,11 +12,11 @@ import net.kyori.adventure.platform.bukkit.BukkitAudiences
  * @since 10/17/2021
  */
 @Service
-@AutoBind
 object KyoriBridge
 {
     private lateinit var adventure: BukkitAudiences
 
+    @AutoBind
     fun adventure() =
         adventure
 
