@@ -9,6 +9,7 @@ import gg.scala.store.controller.DataStoreObjectControllerCache
 import gg.scala.store.storage.storable.IDataStoreObject
 import gg.scala.store.storage.type.DataStoreStorageType
 import net.evilblock.cubed.util.CC
+import net.kyori.adventure.text.Component
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -20,7 +21,8 @@ import java.util.concurrent.CompletableFuture
 data class ChatTag(
     val uniqueId: UUID,
     var displayName: String,
-    var value: String = CC.GRAY,
+    var value: Component =
+        Component.empty(),
 ) : Savable, IDataStoreObject
 {
     override val identifier: UUID

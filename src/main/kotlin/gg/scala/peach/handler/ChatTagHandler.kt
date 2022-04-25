@@ -49,10 +49,10 @@ object ChatTagHandler
                 chatTags[chatTagPlayer.currentChatTag]
                     ?: return@provideChatTag blank
 
-            return@provideChatTag Component.text(" ")
+            return@provideChatTag Component
+                .text(" ")
                 .append {
-                    LegacyComponentSerializer
-                        .legacySection().deserialize(chatTag.value)
+                    chatTag.value
                 }
         }
     }

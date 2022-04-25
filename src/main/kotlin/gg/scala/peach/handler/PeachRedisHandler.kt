@@ -23,13 +23,13 @@ object PeachRedisHandler
             .retrieve<UUID>("uniqueId")
 
         Bukkit.getPlayer(uniqueId)?.let {
-            PeachPlayerService.controller.loadAndCache(
-                uniqueId,
-                {
+            DataStoreObjectControllerCache
+                .findNotNull<ChatTagPlayer>()
+                .loadOptimalCopy(
+                    uniqueId
+                ) {
                     ChatTagPlayer(uniqueId)
-                },
-                DataStoreStorageType.MONGO
-            )
+                }
         }
     }
 

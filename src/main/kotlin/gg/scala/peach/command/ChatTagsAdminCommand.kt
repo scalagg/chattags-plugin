@@ -12,6 +12,7 @@ import gg.scala.peach.adventure.KyoriBridge
 import gg.scala.peach.conversion.DeprecatedPrefixConverter
 import gg.scala.peach.handler.ChatTagHandler
 import gg.scala.peach.model.ChatTag
+import gg.scala.peach.model.ChatTagPlayer
 import gg.scala.peach.result.ChatTagPaginatedResult
 import gg.scala.peach.service.PeachPlayerService
 import gg.scala.store.controller.DataStoreObjectControllerCache
@@ -74,7 +75,8 @@ class ChatTagsAdminCommand : ScalaCommand()
     @Description("Give a player a chat-tag.")
     fun onAdd(sender: CommandSender, target: UUID, chatTag: ChatTag): CompletableFuture<Void>
     {
-        return PeachPlayerService.controller
+        return DataStoreObjectControllerCache
+            .findNotNull<ChatTagPlayer>()
             .load(target, DataStoreStorageType.MONGO)
             .thenApply {
                 it ?: throw ConditionFailedException("This player has never logged on.")
@@ -117,7 +119,8 @@ class ChatTagsAdminCommand : ScalaCommand()
     @Description("Remove access to a chat-tag.")
     fun onRemove(sender: CommandSender, target: UUID, chatTag: ChatTag): CompletableFuture<Void>
     {
-        return PeachPlayerService.controller
+        return DataStoreObjectControllerCache
+            .findNotNull<ChatTagPlayer>()
             .load(target, DataStoreStorageType.MONGO)
             .thenApply {
                 it ?: throw ConditionFailedException("This player has never logged on.")
@@ -202,8 +205,9 @@ class ChatTagsAdminCommand : ScalaCommand()
     @CommandPermission("peach.command.cta.meta.edit")
     fun onMetaDesign(sender: CommandSender, chatTag: ChatTag, design: String)
     {
-        chatTag.value = LegacyComponentSerializer.legacySection()
-            .serialize(MiniMessage.miniMessage().deserialize(design))
+        chatTag.value = MiniMessage
+            .miniMessage()
+            .deserialize(design)
 
         chatTag.saveAndPushUpdatesGlobally().thenRun {
             sender.sendMessage("${CC.RED} Versions of Peach 1.1.3+ now parse chat-tag designs through MiniMessage.")
@@ -216,18 +220,6 @@ class ChatTagsAdminCommand : ScalaCommand()
             sender.sendMessage("")
             sender.sendMessage("${CC.SEC}You've updated ${CC.WHITE}${chatTag.displayName}'s${CC.SEC} design to ${chatTag.value}${CC.SEC}.")
         }
-    }
-
-    @Subcommand("tools colorize")
-    @Description("Convert chat-colors to color chars on each tag.")
-    fun onColorize(sender: CommandSender)
-    {
-        ChatTagHandler.chatTags.forEach {
-            it.value.value = Color.translate(it.value.value)
-            it.value.saveAndPushUpdatesGlobally()
-        }
-
-        sender.sendMessage("${CC.GREEN}All chat tags have been colorized!")
     }
 
     @Subcommand("tools convert")
