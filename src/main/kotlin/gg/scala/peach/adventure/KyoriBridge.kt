@@ -15,6 +15,8 @@ object KyoriBridge
 {
     private lateinit var adventure: BukkitAudiences
 
+    fun adventure() = adventure
+
     @Configure
     fun configure()
     {

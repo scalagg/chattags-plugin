@@ -10,6 +10,7 @@ import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.pagination.PaginatedMenu
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.ItemBuilder
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
@@ -66,7 +67,11 @@ class ChatTagsMenu : PaginatedMenu()
             val equipped = chatTagPlayer.currentChatTag != null && chatTagPlayer.currentChatTag == chatTag.uniqueId
 
             lore.add("${CC.GRAY}Shows up in chat as:")
-            lore.add("${CC.WHITE}${chatTag.value}")
+            lore.add("${CC.WHITE}${
+                LegacyComponentSerializer
+                    .legacySection()
+                    .serialize(chatTag.value)
+            }")
             lore.add("")
             lore.add(
                 if (equipped)
