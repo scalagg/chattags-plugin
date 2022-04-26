@@ -1,6 +1,5 @@
 package gg.scala.peach.adventure
 
-import gg.scala.commons.annotations.inject.AutoBind
 import gg.scala.flavor.service.Close
 import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
@@ -15,10 +14,6 @@ import net.kyori.adventure.platform.bukkit.BukkitAudiences
 object KyoriBridge
 {
     private lateinit var adventure: BukkitAudiences
-
-    @AutoBind
-    fun adventure() =
-        adventure
 
     @Configure
     fun configure()
