@@ -68,9 +68,7 @@ class ChatTagsMenu : PaginatedMenu()
 
             lore.add("${CC.GRAY}Shows up in chat as:")
             lore.add("${CC.WHITE}${
-                LegacyComponentSerializer
-                    .legacySection()
-                    .serialize(chatTag.value)
+                chatTag.legacy
             }")
             lore.add("")
             lore.add(
@@ -119,7 +117,7 @@ class ChatTagsMenu : PaginatedMenu()
             chatTagPlayer.currentChatTag = chatTag.uniqueId
             chatTagPlayer.save()
 
-            player.sendMessage("${CC.SEC}You've equipped the ${CC.PRI}${chatTag.displayName} ${CC.GRAY}(${chatTag.value}${CC.GRAY})${CC.SEC} chat tag.")
+            player.sendMessage("${CC.SEC}You've equipped the ${CC.PRI}${chatTag.displayName} ${CC.GRAY}(${chatTag.legacy}${CC.GRAY})${CC.SEC} chat tag.")
         }
     }
 

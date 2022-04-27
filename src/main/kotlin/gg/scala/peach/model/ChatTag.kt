@@ -10,6 +10,7 @@ import gg.scala.store.storage.storable.IDataStoreObject
 import gg.scala.store.storage.type.DataStoreStorageType
 import net.evilblock.cubed.util.CC
 import net.kyori.adventure.text.Component
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.plugin.java.JavaPlugin
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -27,6 +28,11 @@ data class ChatTag(
 {
     override val identifier: UUID
         get() = uniqueId
+
+    val legacy: String
+        get() = LegacyComponentSerializer
+            .legacySection()
+            .serialize(value)
 
     override fun save(): CompletableFuture<Void>
     {

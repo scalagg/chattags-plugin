@@ -17,6 +17,6 @@ object ChatTagPaginatedResult : PaginatedResult<ChatTag>()
 
     override fun format(result: ChatTag, resultIndex: Int): String
     {
-        return "${CC.GRAY} - ${CC.WHITE}${result.displayName} ${CC.GRAY}(${result.value}${CC.GRAY})"
+        return "${CC.GRAY} - ${CC.WHITE}${result.displayName} ${CC.GRAY}(${result.legacy}${CC.GRAY})"
     }
 }

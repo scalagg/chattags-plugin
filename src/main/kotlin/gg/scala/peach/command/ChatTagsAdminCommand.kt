@@ -210,15 +210,7 @@ class ChatTagsAdminCommand : ScalaCommand()
             .deserialize(design)
 
         chatTag.saveAndPushUpdatesGlobally().thenRun {
-            sender.sendMessage("${CC.RED} Versions of Peach 1.1.3+ now parse chat-tag designs through MiniMessage.")
-            sender.sendMessage("")
-            sender.sendMessage("${CC.RED} Please refer to Kyori's website to view its documentation:")
-            sender.sendMessage("${CC.RED} ${CC.BOLD}https://docs.adventure.kyori.net/minimessage#format")
-            sender.sendMessage("")
-            sender.sendMessage("${CC.RED} To view your own MiniMessage design live, use:")
-            sender.sendMessage("${CC.RED} ${CC.BOLD}/peach tools parse <mini-message>")
-            sender.sendMessage("")
-            sender.sendMessage("${CC.SEC}You've updated ${CC.WHITE}${chatTag.displayName}'s${CC.SEC} design to ${chatTag.value}${CC.SEC}.")
+            sender.sendMessage("${CC.SEC}You've updated ${CC.WHITE}${chatTag.displayName}'s${CC.SEC} design to ${chatTag.legacy}${CC.SEC}.")
         }
     }
 
