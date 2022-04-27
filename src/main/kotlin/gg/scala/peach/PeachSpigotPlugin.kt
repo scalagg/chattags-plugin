@@ -19,7 +19,7 @@ import me.lucko.helper.plugin.ap.PluginDependency
     name = "Peach",
     apiVersion = "1.18",
     depends = [
-        PluginDependency("Cubed"),
+        PluginDependency("scala-commons"),
         PluginDependency("helper"),
         PluginDependency("Lemon"),
         PluginDependency("store-spigot")
