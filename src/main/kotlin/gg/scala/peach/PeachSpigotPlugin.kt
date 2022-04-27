@@ -20,7 +20,6 @@ import me.lucko.helper.plugin.ap.PluginDependency
     apiVersion = "1.18",
     depends = [
         PluginDependency("scala-commons"),
-        PluginDependency("helper"),
         PluginDependency("Lemon"),
         PluginDependency("store-spigot")
     ]
