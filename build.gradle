@@ -13,6 +13,13 @@ repositories {
     mavenCentral()
 
     maven {
+        url "https://hub.spigotmc.org/nexus/content/repositories/snapshots/"
+    }
+
+    maven { url 'https://oss.sonatype.org/content/repositories/snapshots' }
+    maven { url 'https://oss.sonatype.org/content/repositories/central' }
+
+    maven {
         url "${artifactory_contextUrl}/gradle-release"
         credentials {
             username "${artifactory_user}"
