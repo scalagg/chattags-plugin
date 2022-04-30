@@ -1,7 +1,6 @@
-import java.util.stream.Collectors
-
 plugins {
     id "maven-publish"
+    id "com.jfrog.artifactory" version "4.28.2"
     id "org.jetbrains.kotlin.jvm" version "1.6.20"
     id "org.jetbrains.kotlin.kapt" version "1.6.20"
     id "com.github.johnrengelman.shadow" version "7.1.2"
@@ -14,31 +13,26 @@ repositories {
     mavenCentral()
 
     maven {
-        name "Scala"
-        allowInsecureProtocol true
-        url "http://repository.scala.gg/repository/maven-releases/"
-
+        url "${artifactory_contextUrl}/gradle-release"
         credentials {
-            username property("scala.credentials.username") as String
-            password property("scala.credentials.password") as String
+            username "${artifactory_user}"
+            password "${artifactory_password}"
         }
     }
-
 }
 
 dependencies {
     compileOnly "org.jetbrains.kotlin:kotlin-stdlib"
 
-    compileOnly "gg.scala.lemon:bukkit:1.2.0"
-    compileOnly "gg.scala.lemon:common:1.2.0"
+    compileOnly "gg.scala.lemon:bukkit:1.2.1"
 
     compileOnly 'gg.scala.spigot:sspigot-server:1.0.7'
 
     compileOnly "net.evilblock.cubed:bukkit:1.3.7"
     compileOnly "gg.scala.store:spigot:0.1.3"
 
-    compileOnly "me.lucko:helper:5.6.9.1"
-    kapt "me.lucko:helper:5.6.9.1"
+    compileOnly "me.lucko:helper:5.6.10.1"
+    kapt "me.lucko:helper:5.6.10.1"
 
     compileOnly "net.kyori:adventure-text-minimessage:4.10.0"
 }
@@ -58,35 +52,6 @@ shadowJar {
     archiveFileName = "peach.jar"
 }
 
-tasks.withType(GenerateMavenPom).all {
-    doLast {
-        final File file = new File(
-                "$buildDir/publications/shadow/pom-default.xml"
-        )
-
-        final BufferedReader br = new BufferedReader(
-                new FileReader(file)
-
-        )
-        final String lines = br.lines()
-                .map((line) -> {
-                    if (line.contains("<dependencies/>")) "" else line
-                })
-                .collect(Collectors.joining("\n"))
-
-        final BufferedWriter wr = new BufferedWriter(
-                new FileWriter(file, true)
-        )
-
-        final PrintWriter writer = new PrintWriter(file)
-        writer.print("")
-        writer.close()
-
-        wr.write(lines)
-        wr.close()
-    }
-}
-
 publishing {
     publications {
         shadow(MavenPublication) { publication ->
@@ -96,16 +61,30 @@ publishing {
 
     repositories {
         maven {
-            name "Scala"
-            allowInsecureProtocol true
-            url "http://repository.scala.gg/repository/maven-releases/"
-
+            name "scala"
+            url "${artifactory_contextUrl}/${artifactory_release}"
             credentials {
-                username property("scala.credentials.username") as String
-                password property("scala.credentials.password") as String
+                username "${artifactory_user}"
+                password "${artifactory_password}"
             }
         }
     }
 }
 
-tasks.build.dependsOn(shadowJar, publishShadowPublicationToScalaRepository)
+artifactory {
+    this.contextUrl = "${artifactory_contextUrl}"
+
+    publish {
+        repository {
+            repoKey = "${artifactory_release_local}"
+            username = "${artifactory_user}"
+            password = "${artifactory_password}"
+            maven = true
+        }
+    }
+}
+
+tasks.build.dependsOn(
+    shadowJar,
+    publishShadowPublicationToScalaRepository
+)
