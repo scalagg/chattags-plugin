@@ -3,9 +3,9 @@ package gg.scala.peach.command
 import gg.scala.commons.annotations.commands.AutoRegister
 import gg.scala.commons.command.ScalaCommand
 import gg.scala.peach.menu.ChatTagsMenu
-import net.evilblock.cubed.acf.BaseCommand
-import net.evilblock.cubed.acf.annotation.CommandAlias
-import net.evilblock.cubed.acf.annotation.Default
+import gg.scala.commons.acf.BaseCommand
+import gg.scala.commons.acf.annotation.CommandAlias
+import gg.scala.commons.acf.annotation.Default
 import org.bukkit.entity.Player
 
 /**
@@ -14,7 +14,7 @@ import org.bukkit.entity.Player
  */
 @AutoRegister
 @CommandAlias("chattags|tags|prefixes")
-class ChatTagsCommand : ScalaCommand()
+object ChatTagsCommand : ScalaCommand()
 {
     @Default
     fun onChatTags(player: Player)

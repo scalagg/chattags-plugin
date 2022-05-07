@@ -3,8 +3,8 @@ package gg.scala.peach.customizer
 import gg.scala.commons.annotations.commands.customizer.CommandManagerCustomizer
 import gg.scala.peach.handler.ChatTagHandler
 import gg.scala.peach.model.ChatTag
-import net.evilblock.cubed.acf.ConditionFailedException
-import net.evilblock.cubed.command.manager.CubedCommandManager
+import gg.scala.commons.acf.ConditionFailedException
+import gg.scala.commons.command.ScalaCommandManager
 import net.evilblock.cubed.util.CC
 
 /**
@@ -15,7 +15,7 @@ object PeachCommandCustomizer
 {
     @CommandManagerCustomizer
     fun customize(
-        commandManager: CubedCommandManager
+        commandManager: ScalaCommandManager
     )
     {
         commandManager.commandCompletions.registerAsyncCompletion("chattags") {
