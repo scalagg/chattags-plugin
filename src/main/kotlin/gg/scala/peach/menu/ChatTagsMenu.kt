@@ -1,7 +1,5 @@
 package gg.scala.peach.menu
 
-import gg.scala.lemon.handler.PlayerHandler
-import gg.scala.peach.PeachSpigotPlugin
 import gg.scala.peach.handler.ChatTagHandler
 import gg.scala.peach.model.ChatTag
 import gg.scala.peach.model.ChatTagPlayer
@@ -10,7 +8,6 @@ import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.pagination.PaginatedMenu
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.ItemBuilder
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType

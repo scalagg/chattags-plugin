@@ -20,8 +20,7 @@ import me.lucko.helper.plugin.ap.PluginDependency
     apiVersion = "1.18",
     depends = [
         PluginDependency("scala-commons"),
-        PluginDependency("Lemon"),
-        PluginDependency("store-spigot")
+        PluginDependency("Lemon", soft = true)
     ]
 )
 class PeachSpigotPlugin : ExtendedScalaPlugin()

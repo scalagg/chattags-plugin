@@ -5,6 +5,7 @@ import gg.scala.commons.command.ScalaCommand
 import gg.scala.peach.menu.ChatTagsMenu
 import gg.scala.commons.acf.BaseCommand
 import gg.scala.commons.acf.annotation.CommandAlias
+import gg.scala.commons.acf.annotation.CommandPermission
 import gg.scala.commons.acf.annotation.Default
 import org.bukkit.entity.Player
 
@@ -13,10 +14,10 @@ import org.bukkit.entity.Player
  * @since 9/11/2021
  */
 @AutoRegister
-@CommandAlias("chattags|tags|prefixes")
 object ChatTagsCommand : ScalaCommand()
 {
-    @Default
+    @CommandAlias("chattags|tags|prefixes")
+    @CommandPermission("peach.command.chattags")
     fun onChatTags(player: Player)
     {
         ChatTagsMenu().openMenu(player)

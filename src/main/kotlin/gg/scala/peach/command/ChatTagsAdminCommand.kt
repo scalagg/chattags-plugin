@@ -2,11 +2,20 @@ package gg.scala.peach.command
 
 import gg.scala.aware.message.AwareMessage
 import gg.scala.aware.thread.AwareThreadContext
+import gg.scala.cache.uuid.ScalaStoreUuidCache
+import gg.scala.commons.acf.CommandHelp
+import gg.scala.commons.acf.ConditionFailedException
+import gg.scala.commons.acf.annotation.CommandAlias
+import gg.scala.commons.acf.annotation.CommandCompletion
+import gg.scala.commons.acf.annotation.CommandPermission
+import gg.scala.commons.acf.annotation.Default
+import gg.scala.commons.acf.annotation.Description
+import gg.scala.commons.acf.annotation.HelpCommand
+import gg.scala.commons.acf.annotation.Optional
+import gg.scala.commons.acf.annotation.Single
+import gg.scala.commons.acf.annotation.Subcommand
 import gg.scala.commons.annotations.commands.AutoRegister
 import gg.scala.commons.command.ScalaCommand
-import gg.scala.lemon.handler.RedisHandler.buildMessage
-import gg.scala.lemon.util.CubedCacheUtil
-import gg.scala.lemon.util.QuickAccess.sendGlobalPlayerFancyMessage
 import gg.scala.peach.PeachSpigotPlugin
 import gg.scala.peach.adventure.KyoriBridge
 import gg.scala.peach.conversion.DeprecatedPrefixConverter
@@ -14,21 +23,12 @@ import gg.scala.peach.handler.ChatTagHandler
 import gg.scala.peach.model.ChatTag
 import gg.scala.peach.model.ChatTagPlayer
 import gg.scala.peach.result.ChatTagPaginatedResult
-import gg.scala.peach.service.PeachPlayerService
 import gg.scala.store.controller.DataStoreObjectControllerCache
 import gg.scala.store.storage.type.DataStoreStorageType
-import gg.scala.commons.acf.BaseCommand
-import gg.scala.commons.acf.CommandHelp
-import gg.scala.commons.acf.ConditionFailedException
-import gg.scala.commons.acf.annotation.*
-import gg.scala.commons.acf.annotation.Optional
 import net.evilblock.cubed.util.CC
-import net.evilblock.cubed.util.Color
-import net.evilblock.cubed.util.bukkit.FancyMessage
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
 import java.io.BufferedReader
@@ -83,7 +83,7 @@ object ChatTagsAdminCommand : ScalaCommand()
 
                 if (it.ownedTags.contains(chatTag.uniqueId))
                 {
-                    throw ConditionFailedException("${CC.YELLOW}${CubedCacheUtil.fetchName(target)}${CC.RED} already owns the ${CC.YELLOW}${chatTag.displayName}${CC.RED} chat-tag.")
+                    throw ConditionFailedException("${CC.YELLOW}${ScalaStoreUuidCache.username(target)}${CC.RED} already owns the ${CC.YELLOW}${chatTag.displayName}${CC.RED} chat-tag.")
                 }
 
                 it.ownedTags.add(chatTag.uniqueId)
@@ -98,17 +98,7 @@ object ChatTagsAdminCommand : ScalaCommand()
                     )
                 }
 
-                val fancyMessage = FancyMessage()
-                fancyMessage.withMessage(
-                    "${CC.GREEN}You've been granted the ${CC.WHITE}${chatTag.displayName}${CC.GREEN} chat-tag.",
-                    "${CC.GRAY}Equip your new tag by executing: /tags."
-                )
-
-                sendGlobalPlayerFancyMessage(
-                    fancyMessage = fancyMessage, uuid = target
-                )
-
-                sender.sendMessage("${CC.SEC}You've granted ${CC.PRI}${CubedCacheUtil.fetchName(target)}${CC.SEC} the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat-tag.")
+                sender.sendMessage("${CC.SEC}You've granted ${CC.PRI}${ScalaStoreUuidCache.username(target)}${CC.SEC} the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat-tag.")
 
                 return@thenApply null
             }
@@ -127,7 +117,7 @@ object ChatTagsAdminCommand : ScalaCommand()
 
                 if (!it.ownedTags.contains(chatTag.uniqueId))
                 {
-                    throw ConditionFailedException("${CC.YELLOW}${CubedCacheUtil.fetchName(target)}${CC.RED} does not own the ${CC.YELLOW}${chatTag.displayName}${CC.RED} chat-tag.")
+                    throw ConditionFailedException("${CC.YELLOW}${ScalaStoreUuidCache.username(target)}${CC.RED} does not own the ${CC.YELLOW}${chatTag.displayName}${CC.RED} chat-tag.")
                 }
 
                 it.ownedTags.remove(chatTag.uniqueId)
@@ -142,7 +132,7 @@ object ChatTagsAdminCommand : ScalaCommand()
                     )
                 }
 
-                sender.sendMessage("${CC.SEC}You've removed ${CC.PRI}${CubedCacheUtil.fetchName(target)}'s${CC.SEC} access to the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat-tag.")
+                sender.sendMessage("${CC.SEC}You've removed ${CC.PRI}${ScalaStoreUuidCache.username(target)}'s${CC.SEC} access to the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat-tag.")
 
                 return@thenApply null
             }
