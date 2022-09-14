@@ -13,12 +13,6 @@ import java.util.*
 @Service
 object PeachPlayerService : ProfileOrchestrator<ChatTagPlayer>()
 {
-    @Configure
-    fun configure()
-    {
-        this.subscribe()
-    }
-
     override fun new(uniqueId: UUID) = ChatTagPlayer(uniqueId)
     override fun type() = ChatTagPlayer::class
 }
