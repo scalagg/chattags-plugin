@@ -1,5 +1,6 @@
 package gg.scala.peach.menu
 
+import com.cryptomorin.xseries.XMaterial
 import gg.scala.peach.handler.ChatTagHandler
 import gg.scala.peach.model.ChatTag
 import gg.scala.peach.model.ChatTagPlayer
@@ -81,7 +82,10 @@ class ChatTagsMenu : PaginatedMenu()
                 }
             )
 
-            val itemBuilder = ItemBuilder(Material.NAME_TAG)
+            val itemBuilder = ItemBuilder
+                .of(
+                    if (equipped) XMaterial.LIME_DYE else XMaterial.NAME_TAG
+                )
                 .name("${CC.GREEN}${chatTag.displayName}")
                 .setLore(lore)
 
