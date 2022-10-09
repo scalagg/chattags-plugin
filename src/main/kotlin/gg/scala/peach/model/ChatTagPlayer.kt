@@ -1,6 +1,5 @@
 package gg.scala.peach.model
 
-import gg.scala.common.Savable
 import gg.scala.store.controller.DataStoreObjectControllerCache
 import gg.scala.store.controller.annotations.Timestamp
 import gg.scala.store.storage.storable.IDataStoreObject
@@ -15,7 +14,7 @@ import java.util.concurrent.CompletableFuture
 data class ChatTagPlayer(
     private val uniqueId: UUID,
     override val identifier: UUID = uniqueId
-) : IDataStoreObject, Savable
+) : IDataStoreObject
 {
     @JvmField
     @Timestamp
@@ -24,7 +23,7 @@ data class ChatTagPlayer(
     var currentChatTag: UUID? = null
     val ownedTags = mutableListOf<UUID>()
 
-    override fun save(): CompletableFuture<Void>
+    fun save(): CompletableFuture<Void>
     {
         return DataStoreObjectControllerCache
             .findNotNull<ChatTagPlayer>()

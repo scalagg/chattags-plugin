@@ -2,7 +2,6 @@ package gg.scala.peach.model
 
 import gg.scala.aware.message.AwareMessage
 import gg.scala.aware.thread.AwareThreadContext
-import gg.scala.common.Savable
 import gg.scala.peach.PeachSpigotPlugin
 import gg.scala.store.controller.DataStoreObjectControllerCache
 import gg.scala.store.storage.storable.IDataStoreObject
@@ -21,7 +20,7 @@ data class ChatTag(
     var displayName: String,
     var value: Component =
         Component.empty(),
-) : Savable, IDataStoreObject
+) : IDataStoreObject
 {
     override val identifier: UUID
         get() = uniqueId
@@ -31,7 +30,7 @@ data class ChatTag(
             .legacySection()
             .serialize(value)
 
-    override fun save(): CompletableFuture<Void>
+    fun save(): CompletableFuture<Void>
     {
         return DataStoreObjectControllerCache.findNotNull<ChatTag>()
             .save(this, DataStoreStorageType.MONGO)
