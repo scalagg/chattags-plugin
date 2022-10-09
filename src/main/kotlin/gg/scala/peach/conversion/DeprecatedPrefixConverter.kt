@@ -1,6 +1,7 @@
 package gg.scala.peach.conversion
 
 import com.google.gson.reflect.TypeToken
+import gg.scala.peach.PeachSpigotPlugin
 import gg.scala.peach.handler.ChatTagHandler
 import gg.scala.peach.model.ChatTag
 import net.evilblock.cubed.serializers.Serializers
@@ -21,7 +22,7 @@ object DeprecatedPrefixConverter
     val DEPRECATED_PREFIX_LIST_TYPE: Type = object : TypeToken<List<DeprecatedPrefix>>()
     {}.type
 
-    fun convert(json: String, sender: CommandSender)
+    fun convert(json: String, plugin: PeachSpigotPlugin, sender: CommandSender)
     {
         val deprecated = Serializers.gson
             .fromJson<List<DeprecatedPrefix>>(
@@ -46,7 +47,7 @@ object DeprecatedPrefixConverter
                         Color.translate(it.prefix)
                     )
             )
-            newModel.saveAndPushUpdatesGlobally()
+            newModel.saveAndPushUpdatesGlobally(plugin)
 
             sender.sendMessage("${CC.GREEN}Successfully converted ${CC.YELLOW}${newModel.displayName}${CC.GREEN}.")
         }

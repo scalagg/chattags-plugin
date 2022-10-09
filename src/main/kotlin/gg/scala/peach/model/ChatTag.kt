@@ -37,12 +37,12 @@ data class ChatTag(
             .save(this, DataStoreStorageType.MONGO)
     }
 
-    fun saveAndPushUpdatesGlobally(): CompletableFuture<Void>
+    fun saveAndPushUpdatesGlobally(plugin: PeachSpigotPlugin): CompletableFuture<Void>
     {
         return save().thenApply {
             AwareMessage.of(
                 "chat-tag-update",
-                PeachSpigotPlugin.instance.aware,
+                plugin.aware,
                 "uniqueId" to uniqueId
             ).publish(
                 AwareThreadContext.SYNC

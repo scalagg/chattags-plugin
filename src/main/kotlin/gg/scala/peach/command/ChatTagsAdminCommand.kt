@@ -16,8 +16,8 @@ import gg.scala.commons.acf.annotation.Single
 import gg.scala.commons.acf.annotation.Subcommand
 import gg.scala.commons.annotations.commands.AutoRegister
 import gg.scala.commons.command.ScalaCommand
+import gg.scala.flavor.inject.Inject
 import gg.scala.peach.PeachSpigotPlugin
-import gg.scala.peach.adventure.KyoriBridge
 import gg.scala.peach.conversion.DeprecatedPrefixConverter
 import gg.scala.peach.handler.ChatTagHandler
 import gg.scala.peach.model.ChatTag
@@ -26,6 +26,7 @@ import gg.scala.peach.result.ChatTagPaginatedResult
 import gg.scala.store.controller.DataStoreObjectControllerCache
 import gg.scala.store.storage.type.DataStoreStorageType
 import net.evilblock.cubed.util.CC
+import net.kyori.adventure.platform.bukkit.BukkitAudiences
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
@@ -46,6 +47,12 @@ import java.util.concurrent.CompletableFuture
 @CommandAlias("peach|chattagadmin|cta|tag")
 object ChatTagsAdminCommand : ScalaCommand()
 {
+    @Inject
+    lateinit var plugin: PeachSpigotPlugin
+
+    @Inject
+    lateinit var audiences: BukkitAudiences
+
     @Default
     @HelpCommand
     fun onHelp(help: CommandHelp)
@@ -91,7 +98,7 @@ object ChatTagsAdminCommand : ScalaCommand()
                 it.save().thenRun {
                     AwareMessage.of(
                         "ctp-refresh",
-                        PeachSpigotPlugin.instance.aware,
+                        plugin.aware,
                         "uniqueId" to chatTag.uniqueId
                     ).publish(
                         AwareThreadContext.SYNC
@@ -125,7 +132,7 @@ object ChatTagsAdminCommand : ScalaCommand()
                 it.save().thenRun {
                     AwareMessage.of(
                         "ctp-refresh",
-                        PeachSpigotPlugin.instance.aware,
+                        plugin.aware,
                         "uniqueId" to chatTag.uniqueId
                     ).publish(
                         AwareThreadContext.SYNC
@@ -162,7 +169,7 @@ object ChatTagsAdminCommand : ScalaCommand()
 
         val chatTag = ChatTag(UUID.randomUUID(), name)
 
-        chatTag.saveAndPushUpdatesGlobally().thenAccept {
+        chatTag.saveAndPushUpdatesGlobally(plugin).thenAccept {
             sender.sendMessage("${CC.SEC}You've created the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat tag.")
             sender.sendMessage("${CC.GRAY}Use /peach meta design ${chatTag.displayName} <design> to set the tag design.")
         }
@@ -179,7 +186,7 @@ object ChatTagsAdminCommand : ScalaCommand()
             .thenRun {
                 AwareMessage.of(
                     "chat-tag-delete",
-                    PeachSpigotPlugin.instance.aware,
+                    plugin.aware,
                     "uniqueId" to chatTag.uniqueId
                 ).publish(
                     AwareThreadContext.SYNC
@@ -199,7 +206,7 @@ object ChatTagsAdminCommand : ScalaCommand()
             .miniMessage()
             .deserialize(design)
 
-        chatTag.saveAndPushUpdatesGlobally().thenRun {
+        chatTag.saveAndPushUpdatesGlobally(plugin).thenRun {
             sender.sendMessage("${CC.SEC}You've updated ${CC.WHITE}${chatTag.displayName}'s${CC.SEC} design to ${chatTag.legacy}${CC.SEC}.")
         }
     }
@@ -222,7 +229,7 @@ object ChatTagsAdminCommand : ScalaCommand()
 
         bufferedReader.close()
 
-        DeprecatedPrefixConverter.convert(content.toString(), sender)
+        DeprecatedPrefixConverter.convert(content.toString(), plugin, sender)
     }
 
     @Subcommand("tools parse")
@@ -236,7 +243,7 @@ object ChatTagsAdminCommand : ScalaCommand()
             "Your parsed mini-message: ", NamedTextColor.YELLOW
         )
 
-        KyoriBridge.adventure().player(player).sendMessage(
+        audiences.player(player).sendMessage(
             component.append(miniMessage)
         )
     }

@@ -6,7 +6,6 @@ import gg.scala.aware.message.AwareMessage
 import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
-import gg.scala.commons.proxy.Plugins
 import gg.scala.peach.handler.PeachRedisHandler
 import me.lucko.helper.plugin.ap.Plugin
 import me.lucko.helper.plugin.ap.PluginDependency
@@ -25,13 +24,6 @@ import me.lucko.helper.plugin.ap.PluginDependency
 )
 class PeachSpigotPlugin : ExtendedScalaPlugin()
 {
-    companion object
-    {
-        @JvmStatic
-        val instance by Plugins
-            .plugin<PeachSpigotPlugin>()
-    }
-
     val aware by lazy {
         AwareBuilder
             .of<AwareMessage>("peach")
@@ -44,7 +36,7 @@ class PeachSpigotPlugin : ExtendedScalaPlugin()
     fun containerEnable()
     {
         this.aware.listen(PeachRedisHandler)
-        this.aware.connect().toCompletableFuture().join()
+        this.aware.connect()
     }
 
     @ContainerDisable
