@@ -1,8 +1,8 @@
-package gg.scala.peach.handler
+package gg.scala.chattags.plugin.handler
 
 import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
-import gg.scala.peach.model.ChatTag
+import gg.scala.chattags.plugin.model.ChatTag
 import gg.scala.store.controller.DataStoreObjectControllerCache
 import gg.scala.store.storage.type.DataStoreStorageType
 import java.util.*
@@ -12,7 +12,7 @@ import java.util.*
  * @since 9/11/2021
  */
 @Service
-object ChatTagHandler
+object ChatTagsService
 {
     var chatTags = mutableMapOf<UUID, ChatTag>()
 

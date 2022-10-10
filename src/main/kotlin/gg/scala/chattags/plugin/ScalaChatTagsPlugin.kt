@@ -1,4 +1,4 @@
-package gg.scala.peach
+package gg.scala.chattags.plugin
 
 import gg.scala.aware.AwareBuilder
 import gg.scala.aware.codec.codecs.interpretation.AwareMessageCodec
@@ -6,7 +6,7 @@ import gg.scala.aware.message.AwareMessage
 import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
-import gg.scala.peach.handler.PeachRedisHandler
+import gg.scala.chattags.plugin.handler.ChatTagsRedisService
 import me.lucko.helper.plugin.ap.Plugin
 import me.lucko.helper.plugin.ap.PluginDependency
 
@@ -15,14 +15,15 @@ import me.lucko.helper.plugin.ap.PluginDependency
  * @since 9/11/2021
  */
 @Plugin(
-    name = "Peach",
+    name = "ScChatTags",
     apiVersion = "1.18",
     depends = [
         PluginDependency("scala-commons"),
+        PluginDependency("cloudsync", soft = true),
         PluginDependency("Lemon", soft = true)
     ]
 )
-class PeachSpigotPlugin : ExtendedScalaPlugin()
+class ScalaChatTagsPlugin : ExtendedScalaPlugin()
 {
     val aware by lazy {
         AwareBuilder
@@ -35,7 +36,7 @@ class PeachSpigotPlugin : ExtendedScalaPlugin()
     @ContainerEnable
     fun containerEnable()
     {
-        this.aware.listen(PeachRedisHandler)
+        this.aware.listen(ChatTagsRedisService)
         this.aware.connect()
     }
 

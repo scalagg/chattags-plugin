@@ -1,12 +1,12 @@
-package gg.scala.peach.feature
+package gg.scala.chattags.plugin.feature
 
 import gg.scala.commons.annotations.plugin.SoftDependency
 import gg.scala.flavor.service.Configure
 import gg.scala.flavor.service.Service
 import gg.scala.flavor.service.ignore.IgnoreAutoScan
 import gg.scala.lemon.channel.channels.DefaultChatChannel
-import gg.scala.peach.handler.ChatTagHandler
-import gg.scala.peach.service.PeachPlayerService
+import gg.scala.chattags.plugin.handler.ChatTagsService
+import gg.scala.chattags.plugin.service.ChatTagsPlayerService
 import net.kyori.adventure.text.Component
 
 /**
@@ -24,7 +24,7 @@ object LemonFeature
         val blank = Component.text("")
 
         DefaultChatChannel.provideChatTag { player ->
-            val chatTagPlayer = PeachPlayerService
+            val chatTagPlayer = ChatTagsPlayerService
                 .find(player)
                 ?: return@provideChatTag blank
 
@@ -36,7 +36,7 @@ object LemonFeature
             }
 
             val chatTag =
-                ChatTagHandler.chatTags[chatTagPlayer.currentChatTag]
+                ChatTagsService.chatTags[chatTagPlayer.currentChatTag]
                     ?: return@provideChatTag blank
 
             return@provideChatTag Component

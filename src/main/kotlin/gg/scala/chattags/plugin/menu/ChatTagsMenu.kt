@@ -1,15 +1,14 @@
-package gg.scala.peach.menu
+package gg.scala.chattags.plugin.menu
 
 import com.cryptomorin.xseries.XMaterial
-import gg.scala.peach.handler.ChatTagHandler
-import gg.scala.peach.model.ChatTag
-import gg.scala.peach.model.ChatTagPlayer
-import gg.scala.peach.service.PeachPlayerService
+import gg.scala.chattags.plugin.handler.ChatTagsService
+import gg.scala.chattags.plugin.model.ChatTag
+import gg.scala.chattags.plugin.model.ChatTagPlayer
+import gg.scala.chattags.plugin.service.ChatTagsPlayerService
 import net.evilblock.cubed.menu.Button
 import net.evilblock.cubed.menu.pagination.PaginatedMenu
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.ItemBuilder
-import org.bukkit.Material
 import org.bukkit.entity.Player
 import org.bukkit.event.inventory.ClickType
 import org.bukkit.inventory.InventoryView
@@ -26,7 +25,9 @@ class ChatTagsMenu : PaginatedMenu()
         @JvmStatic
         val SLOTS = listOf(
             10, 11, 12, 13, 14, 15, 16,
-            19, 20, 21, 22, 23, 24, 25
+            19, 20, 21, 22, 23, 24, 25,
+            28, 29, 30, 31, 32, 33, 34,
+            37, 38, 39, 40, 41, 42, 43
         )
     }
 
@@ -36,17 +37,19 @@ class ChatTagsMenu : PaginatedMenu()
         updateAfterClick = true
     }
 
-    override fun size(buttons: Map<Int, Button>): Int = 36
+    override fun size(buttons: Map<Int, Button>): Int = 54
+    override fun getMaxItemsPerPage(player: Player) = 28
+
     override fun getAllPagesButtonSlots(): List<Int> = SLOTS
 
     override fun getPrePaginatedTitle(player: Player): String = "Chat Tags"
 
     override fun getAllPagesButtons(player: Player): Map<Int, Button>
     {
-        val chatTagPlayer = PeachPlayerService.find(player)!!
+        val chatTagPlayer = ChatTagsPlayerService.find(player)!!
 
         return mutableMapOf<Int, Button>().also {
-            ChatTagHandler.chatTags.forEach { chatTag ->
+            ChatTagsService.chatTags.forEach { chatTag ->
                 it[it.size] = ChatTagButton(chatTag.value, chatTagPlayer)
             }
         }
@@ -64,21 +67,19 @@ class ChatTagsMenu : PaginatedMenu()
             val ownsPrefix = chatTagPlayer.ownedTags.contains(chatTag.uniqueId)
             val equipped = chatTagPlayer.currentChatTag != null && chatTagPlayer.currentChatTag == chatTag.uniqueId
 
-            lore.add("${CC.GRAY}Shows up in chat as:")
-            lore.add("${CC.WHITE}${
-                chatTag.legacy
-            }")
+            lore.add("${CC.WHITE}Shows up in chat as:")
+            lore.add("${CC.WHITE}${chatTag.legacy}")
             lore.add("")
             lore.add(
                 if (equipped)
                 {
-                    "${CC.GOLD}This tag is equipped."
+                    "${CC.B_GREEN}This tag is equipped!"
                 } else if (!player.hasPermission("peach.all-chattags") || !ownsPrefix)
                 {
-                    "${CC.YELLOW}Click to equip!"
+                    "${CC.GREEN}Click to equip!"
                 } else
                 {
-                    "${CC.RED}You don't own this tag."
+                    "${CC.RED}You don't own this tag!"
                 }
             )
 
@@ -86,7 +87,7 @@ class ChatTagsMenu : PaginatedMenu()
                 .of(
                     if (equipped) XMaterial.LIME_DYE else XMaterial.NAME_TAG
                 )
-                .name("${CC.GREEN}${chatTag.displayName}")
+                .name("${CC.B_PRI}${chatTag.displayName}")
                 .setLore(lore)
 
             if (equipped)

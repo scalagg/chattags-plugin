@@ -1,8 +1,8 @@
-package gg.scala.peach.model
+package gg.scala.chattags.plugin.model
 
 import gg.scala.aware.message.AwareMessage
 import gg.scala.aware.thread.AwareThreadContext
-import gg.scala.peach.PeachSpigotPlugin
+import gg.scala.chattags.plugin.ScalaChatTagsPlugin
 import gg.scala.store.controller.DataStoreObjectControllerCache
 import gg.scala.store.storage.storable.IDataStoreObject
 import gg.scala.store.storage.type.DataStoreStorageType
@@ -36,7 +36,7 @@ data class ChatTag(
             .save(this, DataStoreStorageType.MONGO)
     }
 
-    fun saveAndPushUpdatesGlobally(plugin: PeachSpigotPlugin): CompletableFuture<Void>
+    fun saveAndPushUpdatesGlobally(plugin: ScalaChatTagsPlugin): CompletableFuture<Void>
     {
         return save().thenApply {
             AwareMessage.of(

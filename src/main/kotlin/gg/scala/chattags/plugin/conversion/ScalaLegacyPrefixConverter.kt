@@ -1,9 +1,9 @@
-package gg.scala.peach.conversion
+package gg.scala.chattags.plugin.conversion
 
 import com.google.gson.reflect.TypeToken
-import gg.scala.peach.PeachSpigotPlugin
-import gg.scala.peach.handler.ChatTagHandler
-import gg.scala.peach.model.ChatTag
+import gg.scala.chattags.plugin.ScalaChatTagsPlugin
+import gg.scala.chattags.plugin.handler.ChatTagsService
+import gg.scala.chattags.plugin.model.ChatTag
 import net.evilblock.cubed.serializers.Serializers
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.Color
@@ -16,21 +16,21 @@ import java.util.*
  * @author GrowlyX
  * @since 10/24/2021
  */
-object DeprecatedPrefixConverter
+object ScalaLegacyPrefixConverter
 {
     @JvmStatic
-    val DEPRECATED_PREFIX_LIST_TYPE: Type = object : TypeToken<List<DeprecatedPrefix>>()
+    val DEPRECATED_PREFIX_LIST_TYPE: Type = object : TypeToken<List<ScalaLegacyPrefix>>()
     {}.type
 
-    fun convert(json: String, plugin: PeachSpigotPlugin, sender: CommandSender)
+    fun convert(json: String, plugin: ScalaChatTagsPlugin, sender: CommandSender)
     {
         val deprecated = Serializers.gson
-            .fromJson<List<DeprecatedPrefix>>(
+            .fromJson<List<ScalaLegacyPrefix>>(
                 json, DEPRECATED_PREFIX_LIST_TYPE
             )
 
         deprecated.forEach {
-            val existing = ChatTagHandler.findChatTag(it.name)
+            val existing = ChatTagsService.findChatTag(it.name)
 
             if (existing != null)
             {

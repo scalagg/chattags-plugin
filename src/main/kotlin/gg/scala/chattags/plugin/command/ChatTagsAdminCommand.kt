@@ -1,4 +1,4 @@
-package gg.scala.peach.command
+package gg.scala.chattags.plugin.command
 
 import gg.scala.aware.message.AwareMessage
 import gg.scala.aware.thread.AwareThreadContext
@@ -17,12 +17,12 @@ import gg.scala.commons.acf.annotation.Subcommand
 import gg.scala.commons.annotations.commands.AutoRegister
 import gg.scala.commons.command.ScalaCommand
 import gg.scala.flavor.inject.Inject
-import gg.scala.peach.PeachSpigotPlugin
-import gg.scala.peach.conversion.DeprecatedPrefixConverter
-import gg.scala.peach.handler.ChatTagHandler
-import gg.scala.peach.model.ChatTag
-import gg.scala.peach.model.ChatTagPlayer
-import gg.scala.peach.result.ChatTagPaginatedResult
+import gg.scala.chattags.plugin.ScalaChatTagsPlugin
+import gg.scala.chattags.plugin.conversion.ScalaLegacyPrefixConverter
+import gg.scala.chattags.plugin.handler.ChatTagsService
+import gg.scala.chattags.plugin.model.ChatTag
+import gg.scala.chattags.plugin.model.ChatTagPlayer
+import gg.scala.chattags.plugin.result.ChatTagPaginatedResult
 import gg.scala.store.controller.DataStoreObjectControllerCache
 import gg.scala.store.storage.type.DataStoreStorageType
 import net.evilblock.cubed.util.CC
@@ -43,12 +43,12 @@ import java.util.concurrent.CompletableFuture
  * @since 9/11/2021
  */
 @AutoRegister
-@CommandPermission("peach.command.cta")
-@CommandAlias("peach|chattagadmin|cta|tag")
+@CommandPermission("chattags.command.scchattags")
+@CommandAlias("scchattags|sct|chattagsadmin|cta")
 object ChatTagsAdminCommand : ScalaCommand()
 {
     @Inject
-    lateinit var plugin: PeachSpigotPlugin
+    lateinit var plugin: ScalaChatTagsPlugin
 
     @Inject
     lateinit var audiences: BukkitAudiences
@@ -64,7 +64,7 @@ object ChatTagsAdminCommand : ScalaCommand()
     @Description("View all loaded chat-tags.")
     fun onList(sender: CommandSender, @Optional page: Int?)
     {
-        val chatTagList = ChatTagHandler.chatTags
+        val chatTagList = ChatTagsService.chatTags
 
         if (chatTagList.isEmpty())
         {
@@ -147,10 +147,10 @@ object ChatTagsAdminCommand : ScalaCommand()
 
     @Subcommand("create")
     @Description("Create a new chat-tag.")
-    @CommandPermission("peach.command.cta.management")
+    @CommandPermission("chattags.command.scchattags.management")
     fun onCreate(sender: CommandSender, @Single name: String)
     {
-        val existing = ChatTagHandler.findChatTag(name)
+        val existing = ChatTagsService.findChatTag(name)
 
         if (existing != null)
         {
@@ -171,14 +171,14 @@ object ChatTagsAdminCommand : ScalaCommand()
 
         chatTag.saveAndPushUpdatesGlobally(plugin).thenAccept {
             sender.sendMessage("${CC.SEC}You've created the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat tag.")
-            sender.sendMessage("${CC.GRAY}Use /peach meta design ${chatTag.displayName} <design> to set the tag design.")
+            sender.sendMessage("${CC.GRAY}Use /scchattags meta design ${chatTag.displayName} <design> to set the tag design.")
         }
     }
 
     @Subcommand("delete")
     @CommandCompletion("@chattags")
     @Description("Delete an existing chat-tag.")
-    @CommandPermission("peach.command.cta.management")
+    @CommandPermission("chattags.command.cta.management")
     fun onDelete(sender: CommandSender, chatTag: ChatTag)
     {
         DataStoreObjectControllerCache.findNotNull<ChatTag>()
@@ -199,7 +199,7 @@ object ChatTagsAdminCommand : ScalaCommand()
     @Subcommand("meta design")
     @CommandCompletion("@chattags")
     @Description("Edit a chat-tags design.")
-    @CommandPermission("peach.command.cta.meta.edit")
+    @CommandPermission("chattags.command.scchattags.meta.edit")
     fun onMetaDesign(sender: CommandSender, chatTag: ChatTag, design: String)
     {
         chatTag.value = MiniMessage
@@ -211,25 +211,15 @@ object ChatTagsAdminCommand : ScalaCommand()
         }
     }
 
-    @Subcommand("tools convert")
-    @Description("Convert from an existing list of prefixes.")
+    @Subcommand("tools import")
+    @CommandPermission("chattags.command.scchattags.tools.import")
+    @Description("Import from an existing prefix source.")
     fun onConvertTool(sender: CommandSender, url: String)
     {
-        val handle = URL(url)
-        val content = StringBuilder()
-        val urlConnection = handle.openConnection()
-
-        val bufferedReader = BufferedReader(InputStreamReader(urlConnection.getInputStream()))
-        var line: String?
-
-        while (bufferedReader.readLine().also { line = it } != null)
-        {
-            content.append(line)
-        }
-
-        bufferedReader.close()
-
-        DeprecatedPrefixConverter.convert(content.toString(), plugin, sender)
+        ScalaLegacyPrefixConverter
+            .convert(
+                URL(url).readText(), plugin, sender
+            )
     }
 
     @Subcommand("tools parse")
@@ -240,7 +230,8 @@ object ChatTagsAdminCommand : ScalaCommand()
             .deserialize(message)
 
         val component = Component.text(
-            "Your parsed mini-message: ", NamedTextColor.YELLOW
+            "Your parsed mini-message: ",
+            NamedTextColor.YELLOW
         )
 
         audiences.player(player).sendMessage(

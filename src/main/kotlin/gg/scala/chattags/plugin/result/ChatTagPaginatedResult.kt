@@ -1,6 +1,6 @@
-package gg.scala.peach.result
+package gg.scala.chattags.plugin.result
 
-import gg.scala.peach.model.ChatTag
+import gg.scala.chattags.plugin.model.ChatTag
 import net.evilblock.cubed.util.CC
 import net.evilblock.cubed.util.bukkit.PaginatedResult
 

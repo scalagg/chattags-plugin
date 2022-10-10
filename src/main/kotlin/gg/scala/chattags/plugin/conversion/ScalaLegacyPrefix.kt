@@ -1,4 +1,4 @@
-package gg.scala.peach.conversion
+package gg.scala.chattags.plugin.conversion
 
 /**
  * A model of an old Scandium `prefix`.
@@ -6,7 +6,7 @@ package gg.scala.peach.conversion
  * @author GrowlyX
  * @since 10/24/2021
  */
-data class DeprecatedPrefix(
+data class ScalaLegacyPrefix(
     val _id: String,
     val name: String,
     val displayName: String,

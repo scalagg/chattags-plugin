@@ -1,4 +1,4 @@
-package gg.scala.peach.model
+package gg.scala.chattags.plugin.model
 
 import gg.scala.store.controller.DataStoreObjectControllerCache
 import gg.scala.store.controller.annotations.Timestamp
