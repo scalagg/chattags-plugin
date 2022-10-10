@@ -21,7 +21,7 @@ object CloudSyncFeature
         CloudSyncDiscoveryService
             .discoverable.assets
             .apply {
-                add("gg.scala.chattags.plugin:chattags-plugin:chattags-plugin")
+                add("gg.scala.chattags.plugin:scala-chattags-plugin:chattags-plugin")
             }
     }
 }
