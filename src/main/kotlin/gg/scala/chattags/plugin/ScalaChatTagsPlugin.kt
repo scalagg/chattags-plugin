@@ -7,8 +7,11 @@ import gg.scala.commons.ExtendedScalaPlugin
 import gg.scala.commons.annotations.container.ContainerDisable
 import gg.scala.commons.annotations.container.ContainerEnable
 import gg.scala.chattags.plugin.handler.ChatTagsRedisService
-import me.lucko.helper.plugin.ap.Plugin
-import me.lucko.helper.plugin.ap.PluginDependency
+import gg.scala.commons.core.plugin.Plugin
+import gg.scala.commons.core.plugin.PluginAuthor
+import gg.scala.commons.core.plugin.PluginDependency
+import gg.scala.commons.core.plugin.PluginDependencyComposite
+import gg.scala.commons.core.plugin.PluginWebsite
 
 /**
  * @author GrowlyX
@@ -16,12 +19,14 @@ import me.lucko.helper.plugin.ap.PluginDependency
  */
 @Plugin(
     name = "ScChatTags",
-    apiVersion = "1.18",
-    depends = [
-        PluginDependency("scala-commons"),
-        PluginDependency("cloudsync", soft = true),
-        PluginDependency("Lemon", soft = true)
-    ]
+    version = "%remote%/%branch%/id%"
+)
+@PluginAuthor("Scala")
+@PluginWebsite("https://scala.gg")
+@PluginDependencyComposite(
+    PluginDependency("scala-commons"),
+    PluginDependency("cloudsync", soft = true),
+    PluginDependency("Lemon", soft = true)
 )
 class ScalaChatTagsPlugin : ExtendedScalaPlugin()
 {

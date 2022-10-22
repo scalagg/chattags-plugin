@@ -30,24 +30,21 @@ data class ChatTag(
             .legacySection()
             .serialize(value)
 
-    fun save(): CompletableFuture<Void>
+    private fun save(): CompletableFuture<Void>
     {
         return DataStoreObjectControllerCache.findNotNull<ChatTag>()
             .save(this, DataStoreStorageType.MONGO)
     }
 
-    fun saveAndPushUpdatesGlobally(plugin: ScalaChatTagsPlugin): CompletableFuture<Void>
-    {
-        return save().thenApply {
-            AwareMessage.of(
-                "chat-tag-update",
-                plugin.aware,
-                "uniqueId" to uniqueId
-            ).publish(
-                AwareThreadContext.SYNC
-            )
-
-            return@thenApply null
-        }
-    }
+    fun saveAndPushUpdatesGlobally(plugin: ScalaChatTagsPlugin) =
+        save()
+            .thenRun {
+                AwareMessage.of(
+                    "chat-tag-update",
+                    plugin.aware,
+                    "uniqueId" to uniqueId
+                ).publish(
+                    AwareThreadContext.SYNC
+                )
+            }!!
 }
