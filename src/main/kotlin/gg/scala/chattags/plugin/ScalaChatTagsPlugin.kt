@@ -19,7 +19,7 @@ import gg.scala.commons.core.plugin.PluginWebsite
  */
 @Plugin(
     name = "ScChatTags",
-    version = "%remote%/%branch%/id%"
+    version = "%remote%/%branch%/%id%"
 )
 @PluginAuthor("Scala")
 @PluginWebsite("https://scala.gg")
