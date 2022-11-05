@@ -35,7 +35,7 @@ object NoLemonFeature
                             ChatTagsService.chatTags[chatTagPlayer.currentChatTag]
                                 ?: return@handler
 
-                        it.format = "${chatTag.legacy} ${ChatColor.RESET}${it.player.name}: ${it.message}"
+                        it.format = "${chatTag.legacy} ${ChatColor.RESET}${it.player.displayName}: ${it.message}"
                         return@handler
                     }
 

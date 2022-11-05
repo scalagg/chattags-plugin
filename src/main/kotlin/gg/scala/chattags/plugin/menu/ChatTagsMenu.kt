@@ -100,7 +100,7 @@ class ChatTagsMenu : PaginatedMenu()
 
         override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView)
         {
-            if (!player.hasPermission("chattags.all-chattags") || !player.isOp)
+            if (!player.hasPermission("chattags.all-chattags"))
             {
                 if (!chatTagPlayer.ownedTags.contains(chatTag.uniqueId))
                 {
