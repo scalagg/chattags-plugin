@@ -74,7 +74,7 @@ class ChatTagsMenu : PaginatedMenu()
                 if (equipped)
                 {
                     "${CC.B_GREEN}This tag is equipped!"
-                } else if (!player.hasPermission("peach.all-chattags") || !ownsPrefix)
+                } else if (!player.hasPermission("chattags.all-chattags") || !ownsPrefix)
                 {
                     "${CC.GREEN}Click to equip!"
                 } else
@@ -100,7 +100,7 @@ class ChatTagsMenu : PaginatedMenu()
 
         override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView)
         {
-            if (!player.hasPermission("peach.all-chattags") || !player.isOp)
+            if (!player.hasPermission("chattags.all-chattags") || !player.isOp)
             {
                 if (!chatTagPlayer.ownedTags.contains(chatTag.uniqueId))
                 {

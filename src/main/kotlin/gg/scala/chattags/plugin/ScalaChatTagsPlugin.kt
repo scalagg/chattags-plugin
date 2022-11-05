@@ -32,7 +32,7 @@ class ScalaChatTagsPlugin : ExtendedScalaPlugin()
 {
     val aware by lazy {
         AwareBuilder
-            .of<AwareMessage>("peach")
+            .of<AwareMessage>("chattags")
             .codec(AwareMessageCodec)
             .logger(this.logger)
             .build()
@@ -43,11 +43,5 @@ class ScalaChatTagsPlugin : ExtendedScalaPlugin()
     {
         this.aware.listen(ChatTagsRedisService)
         this.aware.connect()
-    }
-
-    @ContainerDisable
-    fun containerDisable()
-    {
-        this.aware.shutdown()
     }
 }
