@@ -74,12 +74,12 @@ class ChatTagsMenu : PaginatedMenu()
                 if (equipped)
                 {
                     "${CC.B_GREEN}This tag is equipped!"
-                } else if (!player.hasPermission("chattags.all-chattags") || !ownsPrefix)
-                {
-                    "${CC.GREEN}Click to equip!"
-                } else
+                } else if (player.hasPermission("chattags.all-chattags") || ownsPrefix)
                 {
                     "${CC.RED}You don't own this tag!"
+                } else
+                {
+                    "${CC.GREEN}Click to equip!"
                 }
             )
 
