@@ -37,8 +37,8 @@ class ChatTagsMenu : PaginatedMenu()
         updateAfterClick = true
     }
 
-    override fun size(buttons: Map<Int, Button>): Int = 54
-    override fun getMaxItemsPerPage(player: Player) = 28
+    override fun size(buttons: Map<Int, Button>): Int = 45
+    override fun getMaxItemsPerPage(player: Player) = 21
 
     override fun getAllPagesButtonSlots(): List<Int> = SLOTS
 
@@ -67,7 +67,7 @@ class ChatTagsMenu : PaginatedMenu()
             val ownsPrefix = chatTagPlayer.ownedTags.contains(chatTag.uniqueId)
             val equipped = chatTagPlayer.currentChatTag != null && chatTagPlayer.currentChatTag == chatTag.uniqueId
 
-            lore.add("${CC.WHITE}Shows up in chat as:")
+            lore.add("${CC.GRAY}Shows up in chat as:")
             lore.add("${CC.WHITE}${chatTag.legacy}")
             lore.add("")
             lore.add(
@@ -76,10 +76,13 @@ class ChatTagsMenu : PaginatedMenu()
                     "${CC.B_GREEN}This tag is equipped!"
                 } else if (player.hasPermission("chattags.all-chattags") || ownsPrefix)
                 {
+                    "${CC.GREEN}Click to equip!"
+                } else if (!player.hasPermission("chattags.all-chattags") && !ownsPrefix)
+                {
                     "${CC.RED}You don't own this tag!"
                 } else
                 {
-                    "${CC.GREEN}Click to equip!"
+                    "${CC.RED}You don't own this tag!"
                 }
             )
 
@@ -87,7 +90,7 @@ class ChatTagsMenu : PaginatedMenu()
                 .of(
                     if (equipped) XMaterial.LIME_DYE else XMaterial.NAME_TAG
                 )
-                .name("${CC.B_PRI}${chatTag.displayName}")
+                .name("${CC.PRI}${chatTag.displayName}")
                 .setLore(lore)
 
             if (equipped)
