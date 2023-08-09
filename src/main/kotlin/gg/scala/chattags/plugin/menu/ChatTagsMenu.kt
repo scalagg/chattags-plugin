@@ -70,18 +70,20 @@ class ChatTagsMenu : PaginatedMenu()
             lore.add("${CC.WHITE}Shows up in chat as:")
             lore.add("${CC.WHITE}${chatTag.legacy}")
             lore.add("")
-            lore.add(
+
+            if (player.hasPermission("chattags.all-chattags") || ownsPrefix)
+            {
                 if (equipped)
                 {
-                    "${CC.B_GREEN}This tag is equipped!"
-                } else if (!player.hasPermission("chattags.all-chattags") || !ownsPrefix)
-                {
-                    "${CC.GREEN}Click to equip!"
+                    lore += "${CC.B_GREEN}This tag is equipped!"
                 } else
                 {
-                    "${CC.RED}You don't own this tag!"
+                    lore += "${CC.B_YELLOW}Click to equip!"
                 }
-            )
+            } else
+            {
+                lore += "${CC.RED}You don't own this tag!"
+            }
 
             val itemBuilder = ItemBuilder
                 .of(
@@ -100,13 +102,10 @@ class ChatTagsMenu : PaginatedMenu()
 
         override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView)
         {
-            if (!player.hasPermission("chattags.all-chattags"))
+            if (!(chatTagPlayer.ownedTags.contains(chatTag.uniqueId) || player.hasPermission("chattags.all-chattags")))
             {
-                if (!chatTagPlayer.ownedTags.contains(chatTag.uniqueId))
-                {
-                    player.sendMessage("${CC.RED}You don't own the ${CC.YELLOW}${chatTag.displayName}${CC.RED} tag.")
-                    return
-                }
+                player.sendMessage("${CC.RED}You don't own the ${CC.YELLOW}${chatTag.displayName}${CC.RED} tag.")
+                return
             }
 
             if (chatTagPlayer.currentChatTag != null && chatTagPlayer.currentChatTag == chatTag.uniqueId)

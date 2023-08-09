@@ -178,7 +178,7 @@ object ChatTagsAdminCommand : ScalaCommand()
     @Subcommand("delete")
     @CommandCompletion("@chattags")
     @Description("Delete an existing chat-tag.")
-    @CommandPermission("chattags.command.cta.management")
+    @CommandPermission("chattags.command.scchattags.management")
     fun onDelete(sender: CommandSender, chatTag: ChatTag)
     {
         DataStoreObjectControllerCache.findNotNull<ChatTag>()
