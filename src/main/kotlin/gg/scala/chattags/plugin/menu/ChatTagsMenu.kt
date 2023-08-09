@@ -27,7 +27,6 @@ class ChatTagsMenu : PaginatedMenu()
             10, 11, 12, 13, 14, 15, 16,
             19, 20, 21, 22, 23, 24, 25,
             28, 29, 30, 31, 32, 33, 34,
-            37, 38, 39, 40, 41, 42, 43
         )
     }
 
@@ -37,8 +36,8 @@ class ChatTagsMenu : PaginatedMenu()
         updateAfterClick = true
     }
 
-    override fun size(buttons: Map<Int, Button>): Int = 54
-    override fun getMaxItemsPerPage(player: Player) = 28
+    override fun size(buttons: Map<Int, Button>): Int = 45
+    override fun getMaxItemsPerPage(player: Player) = 21
 
     override fun getAllPagesButtonSlots(): List<Int> = SLOTS
 
