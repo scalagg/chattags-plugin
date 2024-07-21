@@ -3,26 +3,19 @@ package gg.scala.chattags.plugin.command
 import gg.scala.aware.message.AwareMessage
 import gg.scala.aware.thread.AwareThreadContext
 import gg.scala.cache.uuid.ScalaStoreUuidCache
-import gg.scala.commons.acf.CommandHelp
-import gg.scala.commons.acf.ConditionFailedException
-import gg.scala.commons.acf.annotation.CommandAlias
-import gg.scala.commons.acf.annotation.CommandCompletion
-import gg.scala.commons.acf.annotation.CommandPermission
-import gg.scala.commons.acf.annotation.Default
-import gg.scala.commons.acf.annotation.Description
-import gg.scala.commons.acf.annotation.HelpCommand
-import gg.scala.commons.acf.annotation.Optional
-import gg.scala.commons.acf.annotation.Single
-import gg.scala.commons.acf.annotation.Subcommand
-import gg.scala.commons.annotations.commands.AutoRegister
-import gg.scala.commons.command.ScalaCommand
-import gg.scala.flavor.inject.Inject
 import gg.scala.chattags.plugin.ScalaChatTagsPlugin
 import gg.scala.chattags.plugin.conversion.ScalaLegacyPrefixConverter
 import gg.scala.chattags.plugin.handler.ChatTagsService
 import gg.scala.chattags.plugin.model.ChatTag
-import gg.scala.chattags.plugin.model.ChatTagPlayer
 import gg.scala.chattags.plugin.result.ChatTagPaginatedResult
+import gg.scala.chattags.plugin.service.ChatTagsPlayerService
+import gg.scala.commons.acf.CommandHelp
+import gg.scala.commons.acf.ConditionFailedException
+import gg.scala.commons.acf.annotation.*
+import gg.scala.commons.acf.annotation.Optional
+import gg.scala.commons.annotations.commands.AutoRegister
+import gg.scala.commons.command.ScalaCommand
+import gg.scala.flavor.inject.Inject
 import gg.scala.store.controller.DataStoreObjectControllerCache
 import gg.scala.store.storage.type.DataStoreStorageType
 import net.evilblock.cubed.util.CC
@@ -32,8 +25,6 @@ import net.kyori.adventure.text.format.NamedTextColor
 import net.kyori.adventure.text.minimessage.MiniMessage
 import org.bukkit.command.CommandSender
 import org.bukkit.entity.Player
-import java.io.BufferedReader
-import java.io.InputStreamReader
 import java.net.URL
 import java.util.*
 import java.util.concurrent.CompletableFuture
@@ -82,33 +73,16 @@ object ChatTagsAdminCommand : ScalaCommand()
     @Description("Give a player a chat-tag.")
     fun onAdd(sender: CommandSender, target: UUID, chatTag: ChatTag): CompletableFuture<Void>
     {
-        return DataStoreObjectControllerCache
-            .findNotNull<ChatTagPlayer>()
-            .load(target, DataStoreStorageType.MONGO)
-            .thenApply {
-                it ?: throw ConditionFailedException("This player has never logged on.")
-
-                if (it.ownedTags.contains(chatTag.uniqueId))
-                {
-                    throw ConditionFailedException("${CC.YELLOW}${ScalaStoreUuidCache.username(target)}${CC.RED} already owns the ${CC.YELLOW}${chatTag.displayName}${CC.RED} chat-tag.")
-                }
-
-                it.ownedTags.add(chatTag.uniqueId)
-
-                it.save().thenRun {
-                    AwareMessage.of(
-                        "ctp-refresh",
-                        plugin.aware,
-                        "uniqueId" to chatTag.uniqueId
-                    ).publish(
-                        AwareThreadContext.SYNC
-                    )
-                }
-
-                sender.sendMessage("${CC.SEC}You've granted ${CC.PRI}${ScalaStoreUuidCache.username(target)}${CC.SEC} the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat-tag.")
-
-                return@thenApply null
+        return ChatTagsPlayerService.useAsyncThenSaveGlobally(target) {
+            if (it.ownedTags.contains(chatTag.uniqueId))
+            {
+                throw ConditionFailedException("${CC.YELLOW}${ScalaStoreUuidCache.username(target)}${CC.RED} already owns the ${CC.YELLOW}${chatTag.displayName}${CC.RED} chat-tag.")
             }
+
+            it.ownedTags.add(chatTag.uniqueId)
+            sender.sendMessage("${CC.SEC}You've granted ${CC.PRI}${ScalaStoreUuidCache.username(target)}${CC.SEC} the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat-tag.")
+            return@useAsyncThenSaveGlobally null
+        }
     }
 
     @Subcommand("remove")
@@ -116,33 +90,16 @@ object ChatTagsAdminCommand : ScalaCommand()
     @Description("Remove access to a chat-tag.")
     fun onRemove(sender: CommandSender, target: UUID, chatTag: ChatTag): CompletableFuture<Void>
     {
-        return DataStoreObjectControllerCache
-            .findNotNull<ChatTagPlayer>()
-            .load(target, DataStoreStorageType.MONGO)
-            .thenApply {
-                it ?: throw ConditionFailedException("This player has never logged on.")
-
-                if (!it.ownedTags.contains(chatTag.uniqueId))
-                {
-                    throw ConditionFailedException("${CC.YELLOW}${ScalaStoreUuidCache.username(target)}${CC.RED} does not own the ${CC.YELLOW}${chatTag.displayName}${CC.RED} chat-tag.")
-                }
-
-                it.ownedTags.remove(chatTag.uniqueId)
-
-                it.save().thenRun {
-                    AwareMessage.of(
-                        "ctp-refresh",
-                        plugin.aware,
-                        "uniqueId" to chatTag.uniqueId
-                    ).publish(
-                        AwareThreadContext.SYNC
-                    )
-                }
-
-                sender.sendMessage("${CC.SEC}You've removed ${CC.PRI}${ScalaStoreUuidCache.username(target)}'s${CC.SEC} access to the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat-tag.")
-
-                return@thenApply null
+        return ChatTagsPlayerService.useAsyncThenSaveGlobally(target) {
+            if (!it.ownedTags.contains(chatTag.uniqueId))
+            {
+                throw ConditionFailedException("${CC.YELLOW}${ScalaStoreUuidCache.username(target)}${CC.RED} does not own the ${CC.YELLOW}${chatTag.displayName}${CC.RED} chat-tag.")
             }
+
+            it.ownedTags.remove(chatTag.uniqueId)
+            sender.sendMessage("${CC.SEC}You've removed ${CC.PRI}${ScalaStoreUuidCache.username(target)}'s${CC.SEC} access to the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat-tag.")
+            return@useAsyncThenSaveGlobally null
+        }
     }
 
     @Subcommand("create")

@@ -63,32 +63,29 @@ class ChatTagsMenu : PaginatedMenu()
         {
             val lore = mutableListOf<String>()
 
-            val ownsPrefix = chatTagPlayer.ownedTags.contains(chatTag.uniqueId)
+            val ownsPrefix = chatTagPlayer.ownedTags.contains(chatTag.uniqueId) || player.hasPermission("chattags.all-chattags")
             val equipped = chatTagPlayer.currentChatTag != null && chatTagPlayer.currentChatTag == chatTag.uniqueId
 
-            lore.add("${CC.WHITE}Shows up in chat as:")
-            lore.add("${CC.WHITE}${chatTag.legacy}")
             lore.add("")
-
-            if (player.hasPermission("chattags.all-chattags") || ownsPrefix)
+            lore += if (ownsPrefix)
             {
                 if (equipped)
                 {
-                    lore += "${CC.B_GREEN}This tag is equipped!"
+                    "${CC.B_GREEN}This tag is equipped!"
                 } else
                 {
-                    lore += "${CC.B_YELLOW}Click to equip!"
+                    "${CC.B_YELLOW}Click to equip!"
                 }
             } else
             {
-                lore += "${CC.RED}You don't own this tag!"
+                "${CC.RED}You don't own this tag!"
             }
 
             val itemBuilder = ItemBuilder
                 .of(
-                    if (equipped) XMaterial.LIME_DYE else XMaterial.NAME_TAG
+                    if (equipped) XMaterial.LIME_DYE else (if (ownsPrefix) XMaterial.PAPER else XMaterial.NAME_TAG)
                 )
-                .name("${CC.B_PRI}${chatTag.displayName}")
+                .name("${CC.B_PRI}${chatTag.legacy}")
                 .setLore(lore)
 
             if (equipped)
@@ -101,12 +98,14 @@ class ChatTagsMenu : PaginatedMenu()
 
         override fun clicked(player: Player, slot: Int, clickType: ClickType, view: InventoryView)
         {
-            if (!(chatTagPlayer.ownedTags.contains(chatTag.uniqueId) || player.hasPermission("chattags.all-chattags")))
+            if (
+                !chatTagPlayer.ownedTags.contains(chatTag.uniqueId) &&
+                !player.hasPermission("chattags.all-chattags")
+            )
             {
                 player.sendMessage("${CC.RED}You don't own the ${CC.YELLOW}${chatTag.displayName}${CC.RED} tag.")
                 return
             }
-
             if (chatTagPlayer.currentChatTag != null && chatTagPlayer.currentChatTag == chatTag.uniqueId)
             {
                 player.sendMessage("${CC.RED}You've reset your chat-tag.")
