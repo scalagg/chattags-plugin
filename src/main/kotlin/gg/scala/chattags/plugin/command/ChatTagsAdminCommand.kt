@@ -16,9 +16,11 @@ import gg.scala.commons.acf.annotation.Optional
 import gg.scala.commons.annotations.commands.AutoRegister
 import gg.scala.commons.command.ScalaCommand
 import gg.scala.flavor.inject.Inject
+import gg.scala.lemon.util.QuickAccess
 import gg.scala.store.controller.DataStoreObjectControllerCache
 import gg.scala.store.storage.type.DataStoreStorageType
 import net.evilblock.cubed.util.CC
+import net.evilblock.cubed.util.bukkit.FancyMessage
 import net.kyori.adventure.platform.bukkit.BukkitAudiences
 import net.kyori.adventure.text.Component
 import net.kyori.adventure.text.format.NamedTextColor
@@ -78,6 +80,14 @@ object ChatTagsAdminCommand : ScalaCommand()
             {
                 throw ConditionFailedException("${CC.YELLOW}${ScalaStoreUuidCache.username(target)}${CC.RED} already owns the ${CC.YELLOW}${chatTag.displayName}${CC.RED} chat-tag.")
             }
+
+            val fancyMessage = FancyMessage()
+            fancyMessage.withMessage(
+                "${CC.GREEN}You've been granted the ${CC.WHITE}${chatTag.displayName}${CC.GREEN} chat-tag.",
+                "${CC.GRAY}Equip your new tag by executing: /tags."
+            )
+
+            QuickAccess.sendGlobalPlayerFancyMessage(fancyMessage, target)
 
             it.ownedTags.add(chatTag.uniqueId)
             sender.sendMessage("${CC.SEC}You've granted ${CC.PRI}${ScalaStoreUuidCache.username(target)}${CC.SEC} the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat-tag.")

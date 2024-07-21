@@ -3,13 +3,8 @@ package gg.scala.chattags.plugin.handler
 import gg.scala.aware.annotation.Subscribe
 import gg.scala.aware.message.AwareMessage
 import gg.scala.chattags.plugin.model.ChatTag
-import gg.scala.chattags.plugin.model.ChatTagPlayer
-import gg.scala.chattags.plugin.service.ChatTagsPlayerService
 import gg.scala.store.controller.DataStoreObjectControllerCache
 import gg.scala.store.storage.type.DataStoreStorageType
-import net.evilblock.cubed.util.CC
-import net.evilblock.cubed.util.bukkit.FancyMessage
-import org.bukkit.Bukkit
 import java.util.*
 
 /**
@@ -18,46 +13,6 @@ import java.util.*
  */
 object ChatTagsRedisService
 {
-    @Subscribe("ctp-refresh")
-    fun onCtpRefresh(message: AwareMessage)
-    {
-        val uniqueId = message
-            .retrieve<UUID>("uniqueId")
-
-        Bukkit.getPlayer(uniqueId)?.let {
-            val original = ChatTagsPlayerService.find(it)
-                ?: return@let null
-
-            val chatTags = original.ownedTags
-
-            DataStoreObjectControllerCache
-                .findNotNull<ChatTagPlayer>()
-                .loadOptimalCopy(uniqueId) {
-                    ChatTagPlayer(uniqueId)
-                }
-                .thenAccept { player ->
-                    val newTags = player.ownedTags
-                        .filter { chatTag ->
-                            chatTag !in chatTags
-                        }
-
-                    for (newTag in newTags)
-                    {
-                        val chatTag = ChatTagsService.chatTags[newTag]
-                            ?: continue
-
-                        val fancyMessage = FancyMessage()
-                        fancyMessage.withMessage(
-                            "${CC.GREEN}You've been granted the ${CC.WHITE}${chatTag.displayName}${CC.GREEN} chat-tag.",
-                            "${CC.GRAY}Equip your new tag by executing: /tags."
-                        )
-
-                        fancyMessage.sendToPlayer(it)
-                    }
-                }
-        }
-    }
-
     @Subscribe("chat-tag-delete")
     fun onChatTagDelete(message: AwareMessage)
     {
