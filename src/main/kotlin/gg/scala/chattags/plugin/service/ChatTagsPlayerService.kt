@@ -14,4 +14,16 @@ object ChatTagsPlayerService : ProfileOrchestrator<ChatTagPlayer>()
 {
     override fun new(uniqueId: UUID) = ChatTagPlayer(uniqueId)
     override fun type() = ChatTagPlayer::class
+
+    override fun postLoad(uniqueId: UUID)
+    {
+        val profile = find(uniqueId)
+            ?: return
+
+        if (!profile.hasSpoofBeenFixed)
+        {
+            profile.fixedOwnedTags += profile.ownedTags.take(5)
+            profile.hasSpoofBeenFixed = true
+        }
+    }
 }

@@ -76,7 +76,7 @@ object ChatTagsAdminCommand : ScalaCommand()
     fun onAdd(sender: CommandSender, target: UUID, chatTag: ChatTag): CompletableFuture<Void>
     {
         return ChatTagsPlayerService.useAsyncThenSaveGlobally(target) {
-            if (it.ownedTags.contains(chatTag.uniqueId))
+            if (it.fixedOwnedTags.contains(chatTag.uniqueId))
             {
                 throw ConditionFailedException("${CC.YELLOW}${ScalaStoreUuidCache.username(target)}${CC.RED} already owns the ${CC.YELLOW}${chatTag.displayName}${CC.RED} chat-tag.")
             }
@@ -89,7 +89,7 @@ object ChatTagsAdminCommand : ScalaCommand()
 
             QuickAccess.sendGlobalPlayerFancyMessage(fancyMessage, target)
 
-            it.ownedTags.add(chatTag.uniqueId)
+            it.fixedOwnedTags.add(chatTag.uniqueId)
             sender.sendMessage("${CC.SEC}You've granted ${CC.PRI}${ScalaStoreUuidCache.username(target)}${CC.SEC} the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat-tag.")
             return@useAsyncThenSaveGlobally null
         }
@@ -101,12 +101,12 @@ object ChatTagsAdminCommand : ScalaCommand()
     fun onRemove(sender: CommandSender, target: UUID, chatTag: ChatTag): CompletableFuture<Void>
     {
         return ChatTagsPlayerService.useAsyncThenSaveGlobally(target) {
-            if (!it.ownedTags.contains(chatTag.uniqueId))
+            if (!it.fixedOwnedTags.contains(chatTag.uniqueId))
             {
                 throw ConditionFailedException("${CC.YELLOW}${ScalaStoreUuidCache.username(target)}${CC.RED} does not own the ${CC.YELLOW}${chatTag.displayName}${CC.RED} chat-tag.")
             }
 
-            it.ownedTags.remove(chatTag.uniqueId)
+            it.fixedOwnedTags.remove(chatTag.uniqueId)
             sender.sendMessage("${CC.SEC}You've removed ${CC.PRI}${ScalaStoreUuidCache.username(target)}'s${CC.SEC} access to the ${CC.WHITE}${chatTag.displayName}${CC.SEC} chat-tag.")
             return@useAsyncThenSaveGlobally null
         }

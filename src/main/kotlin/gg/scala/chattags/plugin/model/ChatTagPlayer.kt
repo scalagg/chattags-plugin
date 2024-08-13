@@ -16,7 +16,11 @@ data class ChatTagPlayer(
 ) : IDataStoreObject
 {
     var currentChatTag: UUID? = null
+
     val ownedTags = mutableListOf<UUID>()
+    val fixedOwnedTags = mutableListOf<UUID>()
+
+    var hasSpoofBeenFixed = false
 
     fun save(): CompletableFuture<Void>
     {
