@@ -18,7 +18,17 @@ data class ChatTagPlayer(
     var currentChatTag: UUID? = null
 
     val ownedTags = mutableListOf<UUID>()
-    val fixedOwnedTags = mutableListOf<UUID>()
+    var fixedOwnedTagsBackend: MutableList<UUID>? = null
+
+    val fixedOwnedTags: MutableList<UUID>
+        get() {
+            if (fixedOwnedTagsBackend == null)
+            {
+                fixedOwnedTagsBackend = mutableListOf()
+            }
+
+            return fixedOwnedTagsBackend!!
+        }
 
     var hasSpoofBeenFixed = false
 

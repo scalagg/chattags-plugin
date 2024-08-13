@@ -24,6 +24,7 @@ object ChatTagsPlayerService : ProfileOrchestrator<ChatTagPlayer>()
         {
             profile.fixedOwnedTags += profile.ownedTags.take(5)
             profile.hasSpoofBeenFixed = true
+            profile.save()
         }
     }
 }

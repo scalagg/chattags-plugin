@@ -76,7 +76,7 @@ object ChatTagsAdminCommand : ScalaCommand()
     fun onAdd(sender: CommandSender, target: UUID, chatTag: ChatTag): CompletableFuture<Void>
     {
         return ChatTagsPlayerService.useAsyncThenSaveGlobally(target) {
-            if (it.fixedOwnedTags.contains(chatTag.uniqueId))
+            if (it.fixedOwnedTags.contains(chatTag.uniqueId) == true)
             {
                 throw ConditionFailedException("${CC.YELLOW}${ScalaStoreUuidCache.username(target)}${CC.RED} already owns the ${CC.YELLOW}${chatTag.displayName}${CC.RED} chat-tag.")
             }
